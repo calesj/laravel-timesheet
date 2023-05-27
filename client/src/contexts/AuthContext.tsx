@@ -32,33 +32,6 @@ export function AuthProvider({children}) {
 
     const router = useRouter()
 
-    // VERIFICA SE EXISTE UM TOKEN SALVO NO NAVEGADOR,
-    // SE EXISTIR, ELE VAI FAZER A REQUISICAO NA API COM ESSE TOKEN,
-    // RETORNANDO OS DADOS DO USUARIO
-    useEffect( () => {
-        const token = parseCookies()
-
-        // VERIFICA SE EXISTE O TOKEN m2_token
-        if(token.m2_token) {
-            getUser(token.m2_token) // SE EXISTIR, ELE TENTA FAZER A REQUISICAO NA API, COM ESSE TOKEN
-                .then((response => {
-                    setUser(response?.data) // SE DER SUCESSO, ELE VAI PREENCHER AS INFORMACOES DO `userState` COM OS DADOS VINDO DA API
-            })) .catch((e) => {
-                console.log(e) // SE DER ERRO, VAI IMPRIMIR O ERRO NO CONSOLE
-            })
-        }
-    }, [])
-
-
-    // METODO RESPONSAVEL POR TRAZER OS DADOS DO USUARIO ATRAVES DO TOKEN
-    function getUser (token: string) {
-        return axios.get('http://127.0.0.1:8000/api/user', {
-            headers: {
-                'Authorization': 'Bearer ' + token
-            }
-        })
-    }
-
     // METODO RESPONSAVEL, POR LOGAR NA SUA CONTA
     async function signIn({email, password}: SignInData) {
         const response  = await axios.post('http://127.0.0.1:8000/api/login', {
@@ -78,7 +51,7 @@ export function AuthProvider({children}) {
 
     return (
 
-        <AuthContext.Provider value={{ user, isAuthenticated, signIn }}>
+        <AuthContext.Provider value={{ user, isAuthenticated, signIn}}>
             {children}
         </AuthContext.Provider>
     )
