@@ -1,14 +1,47 @@
 import Head from 'next/head'
 import {LockClosedIcon} from "@heroicons/react/outline";
 import {useForm} from 'react-hook-form';
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 import {AuthContext} from "@/contexts/AuthContext";
+import {parseCookies} from "nookies";
+import {api} from "@/services/api";
+import {useRouter} from "next/router";
+
 export default function Home() {
   const { register, handleSubmit } = useForm();
   const {signIn} = useContext(AuthContext)
+  const router = useRouter()
+
+  // VERIFICA SE EXISTE UM TOKEN SALVO NO NAVEGADOR,
+  // SE EXISTIR, ELE VAI FAZER A REQUISICAO NA API COM ESSE TOKEN,
+  // RETORNANDO OS DADOS DO USUARIO
+  useEffect(  () => {
+    getUser()
+  }, [])
+
+  // METODO RESPONSAVEL, POR VERIFICAR SE JA EXISTE ALGUEM AUTENTICADO
+  // SE TIVER, ELE REDIRECIONA PARA A PAGINA DE DASHBOARD
+  async function getUser() {
+    const token = parseCookies()
+    if (token.m2_token) {
+      let response =  await api.get('/user')
+          .then((response => {
+            return response
+          }))
+          .catch((e => {
+            console.log(e)
+          }));
+      if (response?.data.id) {
+          router.push('/dashboard')
+      }
+    }
+  }
+
+  // METODO RESPONSAVEL POR ENVIAR OS PARAMETROS DO FORMULARIO, AO METODO DE LOGAR DO CONTEXT
   async function handleSignIn(data) {
     await signIn(data)
   }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Head>
