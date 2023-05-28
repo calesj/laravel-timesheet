@@ -4,16 +4,24 @@ namespace App\Http\Controllers;
 
 use App\Form\FormValidation;
 use App\Models\Timescale;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Ramsey\Uuid\Type\Time;
 
 class TimescaleController extends Controller
 {
 
+    /**
+     * @var string[]
+     */
     private $rules = [
         'nome' => 'required',
         'escala' => 'required'
     ];
+
+    /**
+     * METODO RESPONSAVEL POR RETORNAR TODOS OS REGISTROS DA TABELA Timescale
+     * @return JsonResponse
+     */
     public function index()
     {
         $timescales = Timescale::all();
@@ -21,6 +29,11 @@ class TimescaleController extends Controller
         return response()->json($timescales);
     }
 
+    /**
+     * METODO RESPONSAVEL POR FAZER UMA BUSCA ATRAVES DO `id`
+     * @param $id
+     * @return JsonResponse
+     */
     public function show($id)
     {
         $timescale = Timescale::find($id);
@@ -28,9 +41,13 @@ class TimescaleController extends Controller
         return response()->json($timescale);
     }
 
+    /**
+     * METODO RESPONSAVEL POR FAZER UMA INSERÇÃO NO BANCO
+     * @param Request $request
+     * @return JsonResponse|bool
+     */
     public function store(Request $request)
     {
-
         $validation = FormValidation::validar($request->all(), $this->rules);
 
         if ($validation !== true) {
@@ -49,6 +66,12 @@ class TimescaleController extends Controller
         }
     }
 
+    /**
+     * MÉTODO RESPONSAVEL POR FAZER UMA ATUALIZAÇÃO NO BANCO
+     * @param $id
+     * @param Request $request
+     * @return JsonResponse|bool
+     */
     public function update($id, Request $request)
     {
 
@@ -70,6 +93,11 @@ class TimescaleController extends Controller
         }
     }
 
+    /**
+     * MÉTODO RESPONSAVEL POR EXCLUIR UM REGISTRO DO BANCO
+     * @param $id
+     * @return JsonResponse
+     */
     public function destroy($id)
     {
         $timescale = Timescale::find($id);
