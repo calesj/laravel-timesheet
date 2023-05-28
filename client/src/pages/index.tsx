@@ -3,39 +3,19 @@ import {LockClosedIcon} from "@heroicons/react/outline";
 import {useForm} from 'react-hook-form';
 import {useContext, useEffect} from "react";
 import {AuthContext} from "@/contexts/AuthContext";
-import {parseCookies} from "nookies";
-import {api} from "@/services/api";
 import {useRouter} from "next/router";
 
 export default function Home() {
   const { register, handleSubmit } = useForm();
-  const {signIn} = useContext(AuthContext)
+  const {signIn, getUser} = useContext(AuthContext)
   const router = useRouter()
 
   // VERIFICA SE EXISTE UM TOKEN SALVO NO NAVEGADOR,
   // SE EXISTIR, ELE VAI FAZER A REQUISICAO NA API COM ESSE TOKEN,
   // RETORNANDO OS DADOS DO USUARIO
-  useEffect(  () => {
-    getUser()
-  }, [])
-
-  // METODO RESPONSAVEL, POR VERIFICAR SE JA EXISTE ALGUEM AUTENTICADO
-  // SE TIVER, ELE REDIRECIONA PARA A PAGINA DE DASHBOARD
-  async function getUser() {
-    const token = parseCookies()
-    if (token.m2_token) {
-      let response =  await api.get('/user')
-          .then((response => {
-            return response
-          }))
-          .catch((e => {
-            console.log(e)
-          }));
-      if (response?.data.id) {
-          router.push('/dashboard')
-      }
-    }
-  }
+  useEffect(() => {
+      getUser('dashboard')
+  }, []);
 
   // METODO RESPONSAVEL POR ENVIAR OS PARAMETROS DO FORMULARIO, AO METODO DE LOGAR DO CONTEXT
   async function handleSignIn(data) {
@@ -55,15 +35,11 @@ export default function Home() {
             src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
             alt="Workflow"
           />
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Sign in to your account</h2>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Entre na sua conta</h2>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSignIn)}>
-          <input type="hidden" name="remember" defaultValue="true" />
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
-              <label htmlFor="email-address" className="sr-only">
-                Email address
-              </label>
               <input
                   {...register('email')}
                 id="email-address"
@@ -72,13 +48,10 @@ export default function Home() {
                 autoComplete="email"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Email address"
+                placeholder="Endereço de e-mail"
               />
             </div>
             <div>
-              <label htmlFor="password" className="sr-only">
-                Password
-              </label>
               <input
                   {...register('password')}
                 id="password"
@@ -87,27 +60,15 @@ export default function Home() {
                 autoComplete="current-password"
                 required
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                placeholder="Password"
+                placeholder="Senha"
               />
             </div>
           </div>
 
           <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember_me"
-                name="remember_me"
-                type="checkbox"
-                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember_me" className="ml-2 block text-sm text-gray-900">
-                Remember me
-              </label>
-            </div>
-
             <div className="text-sm">
-              <a href="#" className="font-medium text-indigo-600 hover:text-indigo-500">
-                Forgot your password?
+              <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Não tem uma conta? <b>Registre-se</b>
               </a>
             </div>
           </div>
@@ -120,7 +81,7 @@ export default function Home() {
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
               </span>
-              Sign in
+              Entrar
             </button>
           </div>
         </form>
