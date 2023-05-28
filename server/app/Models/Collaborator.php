@@ -6,10 +6,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ *
+ */
 class Collaborator extends Model
 {
     use HasFactory;
 
+    /**
+     * CAMPOS PREENCHIVEIS
+     * @var string[]
+     */
     protected $fillable = [
         'nome',
         'matricula',
@@ -17,7 +24,10 @@ class Collaborator extends Model
         'timescale_id'
     ];
 
-    // UM COLABORADOR, SO PODE TER UMA ESCALA
+    /**
+     * UM COLABORADOR, SO PODE TER UMA ESCALA
+     * @return BelongsTo
+     */
     public function timescale(): BelongsTo
     {
         return $this->belongsTo(Timescale::class);
