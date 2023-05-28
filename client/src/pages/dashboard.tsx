@@ -8,26 +8,21 @@ import {destroyCookie, parseCookies} from "nookies"
 import {useRouter} from "next/router";
 import {getAPIClient} from "@/services/axios";
 import Head from 'next/head'
-import Table from "@/components/table";
-const navigation = ['Dashboard', 'Team', 'Projects', 'Calendar', 'Reports']
+import TableCollaborators from "@/components/tableCollaborators";
+const navigation = ['Dashboard', 'Escalas', 'Projects', 'Calendar', 'Reports']
 
-
-function classNames(...classes) {
-    return classes.filter(Boolean).join(' ')
-}
-
-export default function Dashboard() {
+export default function Timescale() {
     const {user, signOut, getUser} = useContext(AuthContext)
     const router = useRouter()
 
     useEffect(() => {
-        getUser()
-    },
-     [])
+            getUser()
+        },
+        [])
     // METODO SAIR
     function exit() {
         // METODO RESPONSAVEL POR DESTRUIR O COOKIE DO TOKEN, E REDIRECIONAR PRA TELA INICIAL
-       signOut()
+        signOut()
     }
 
     return (
@@ -55,7 +50,7 @@ export default function Dashboard() {
                                                 itemIdx === 0 ? (
                                                     <Fragment key={item}>
                                                         {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                                                        <a href="#"
+                                                        <a href=''
                                                            className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">
                                                             {item}
                                                         </a>
@@ -63,7 +58,7 @@ export default function Dashboard() {
                                                 ) : (
                                                     <a
                                                         key={item}
-                                                        href="#"
+                                                        href={item.toLowerCase()}
                                                         className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                                                     >
                                                         {item}
@@ -78,14 +73,14 @@ export default function Dashboard() {
                                         <div>
                                             <b className='text-white'>{(user && user.name) ? user.name : ''}</b>
                                         </div>
-                                            <a
-                                                onClick={exit}
-                                                key='exit'
-                                                href=""
-                                                className="ml-5 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-[15px] font-medium"
-                                            >
-                                                Sair
-                                            </a>
+                                        <a
+                                            onClick={exit}
+                                            key='exit'
+                                            href=""
+                                            className="ml-5 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-[15px] font-medium"
+                                        >
+                                            Sair
+                                        </a>
                                     </div>
                                 </div>
                                 <div className="-mr-2 flex md:hidden">
@@ -155,9 +150,7 @@ export default function Dashboard() {
             <main>
                 <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                     <div className="px-4 py-6 sm:px-0">
-                        <Table>
-
-                        </Table>
+                        <TableCollaborators/>
                     </div>
                 </div>
             </main>
