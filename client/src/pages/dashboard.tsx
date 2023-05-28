@@ -6,8 +6,9 @@ import {api} from "@/services/api"
 import {GetServerSideProps} from "next"
 import {destroyCookie, parseCookies} from "nookies"
 import {useRouter} from "next/router";
-import Head from 'next/head'
 import {getAPIClient} from "@/services/axios";
+import Head from 'next/head'
+import Table from "@/components/table";
 const navigation = ['Dashboard', 'Team', 'Projects', 'Calendar', 'Reports']
 
 
@@ -16,19 +17,17 @@ function classNames(...classes) {
 }
 
 export default function Dashboard() {
-    const {user} = useContext(AuthContext)
+    const {user, signOut, getUser} = useContext(AuthContext)
     const router = useRouter()
 
     useEffect(() => {
-
+        getUser()
     },
      [])
-
     // METODO SAIR
-    function signOut() {
+    function exit() {
         // METODO RESPONSAVEL POR DESTRUIR O COOKIE DO TOKEN, E REDIRECIONAR PRA TELA INICIAL
-        destroyCookie(undefined, 'm2_token')
-        router.push('/')
+       signOut()
     }
 
     return (
@@ -77,12 +76,12 @@ export default function Dashboard() {
                                 <div className="hidden md:block">
                                     <div className="ml-4 flex items-center md:ml-6">
                                         <div>
-                                            {(user && user.name) ? user.name : ''}
+                                            <b className='text-white'>{(user && user.name) ? user.name : ''}</b>
                                         </div>
                                             <a
-                                                onClick={signOut}
+                                                onClick={exit}
                                                 key='exit'
-                                                href="#"
+                                                href=""
                                                 className="ml-5 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-[15px] font-medium"
                                             >
                                                 Sair
@@ -103,7 +102,6 @@ export default function Dashboard() {
                                 </div>
                             </div>
                         </div>
-
                         <Disclosure.Panel className="md:hidden">
                             <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                                 {navigation.map((item, itemIdx) =>
@@ -156,11 +154,11 @@ export default function Dashboard() {
             </header>
             <main>
                 <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    {/* Replace with your content */}
                     <div className="px-4 py-6 sm:px-0">
-                        <div className="border-4 border-dashed border-gray-200 rounded-lg h-96"/>
+                        <Table>
+
+                        </Table>
                     </div>
-                    {/* /End replace */}
                 </div>
             </main>
         </div>
@@ -184,7 +182,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 
     const response = await apiClient.get('/user')
         .then((response => {
-            return response
+            return response.data
         }))
         .catch((e => {
             console.log(e)
