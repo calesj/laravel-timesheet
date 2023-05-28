@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function Table() {
+export default function TableCollaborators() {
     return (
         <div className="flex flex-col">
             <div className="overflow-x-auto">
