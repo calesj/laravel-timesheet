@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('matricula');
             $table->string('cpf');
             $table->unsignedBigInteger('timescale_id');
+            $table->timestamps();
 
             $table->foreign('timescale_id')->references('id')->on('timescales');
         });

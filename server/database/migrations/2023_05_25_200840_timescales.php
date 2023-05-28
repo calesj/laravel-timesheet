@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nome');
             $table->string('escala');
+            $table->timestamps();
         });
     }
 
@@ -23,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('timescale');
+        Schema::dropIfExists('timescales');
     }
 };
