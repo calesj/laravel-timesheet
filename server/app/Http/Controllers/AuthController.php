@@ -8,14 +8,23 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Mockery\Exception;
 
+/**
+ *
+ */
 class AuthController extends Controller
 {
+    /*** @var string[] */
     private $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|email|string|max:255|unique:users',
         'password' => 'required|string|min:8'
     ];
 
+    /**
+     * METODO RESPONSAVEL POR FAZER O REGISTRO DE UM USUARIO
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|true
+     */
     public function register(Request $request)
     {
         // VALIDANDO OS DADOS
@@ -44,6 +53,11 @@ class AuthController extends Controller
         }
     }
 
+    /**
+     * METODO RESPONSAVEL POR FAZER O LOGIN
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse|true
+     */
     public function login(Request $request)
     {
         $rules = [
