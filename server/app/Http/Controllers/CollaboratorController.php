@@ -7,6 +7,7 @@ use App\Models\Collaborator;
 use App\Models\Timescale;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 /**
  *
@@ -30,11 +31,14 @@ class CollaboratorController extends Controller
      */
     public function index()
     {
+        if (!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
         try {
             $collaborators = Collaborator::with('timescale')->get();
 
             if (!$collaborators) {
-                return response()->json(['Recurso nao encontado'],204);
+                return response()->json(['Recurso nao encontado'], 204);
             }
 
             return response()->json($collaborators);
@@ -50,11 +54,15 @@ class CollaboratorController extends Controller
      */
     public function show(int $id)
     {
+        if (!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         try {
             $collaborator = Collaborator::find($id);
 
             if (!$collaborator) {
-                return response()->json(['Recurso nao encontado'],204);
+                return response()->json(['Recurso nao encontado'], 204);
             }
 
             return response()->json($collaborator);
@@ -70,6 +78,10 @@ class CollaboratorController extends Controller
      */
     public function store(Request $request)
     {
+        if (!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         $validate = FormValidation::validar($request->all(), $this->rules);
 
         if ($validate !== true) {
@@ -111,6 +123,10 @@ class CollaboratorController extends Controller
      */
     public function update($id, Request $request)
     {
+        if (!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         $validate = FormValidation::validar($request->all(), $this->rules);
 
         // VERIFICA SE EXISTE ALGUM ERRO DE VALIDACAO, SE EXISTIR ELE RETORNA ESSE ERRO
@@ -123,7 +139,7 @@ class CollaboratorController extends Controller
 
             // CASO NAO EXISTA ESSE USUARIO
             if (!$collaborator) {
-                return response()->json('Recurso nao encontrado',204);
+                return response()->json('Recurso nao encontrado', 204);
             }
 
             $collaborator->nome = $request['nome'];
@@ -155,7 +171,12 @@ class CollaboratorController extends Controller
      * @param $id
      * @return JsonResponse
      */
-    public function destroy($id) {
+    public function destroy($id)
+    {
+        if (!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         $collaborator = Collaborator::find($id);
         if (!$collaborator) {
             return response()->json('Recurso nao encontrado', 204);
