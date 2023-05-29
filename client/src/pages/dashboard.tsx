@@ -162,7 +162,7 @@ export default function Dashboard() {
                             success ? (
                                 <div role="alert">
                                     <div className="bg-green-500 text-white font-bold rounded-t px-4 py-4">
-                                        { collaborator.id ? <p>Registro editado com sucesso</p> : <p>Cadastrar Colaborador</p>}
+                                        { collaborator.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
                                     </div>
                                 </div>
                             ) : ''
