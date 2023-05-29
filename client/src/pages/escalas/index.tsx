@@ -1,145 +1,74 @@
-import {Fragment, useContext, useEffect} from 'react'
-import {Disclosure} from '@headlessui/react'
-import {MenuIcon, XIcon} from '@heroicons/react/outline'
-import {AuthContext} from "@/contexts/AuthContext"
-import {GetServerSideProps} from "next"
-import {destroyCookie, parseCookies} from "nookies"
-import {useRouter} from "next/router";
-import {getAPIClient} from "@/services/axios";
 import Head from 'next/head'
-import TableTimescales from "@/components/tableTimescales";
-const navigation = ['Dashboard', 'Escalas', 'Projects', 'Calendar', 'Reports']
+import Header from "@/components/header";
+import {withAuthServerSideProps} from "@/components/getServerSideProps/getServerSideProps";
+import {useForm} from 'react-hook-form';
+import React, {useState} from "react";
+import {loading} from "@/components/loading/loading";
+import {api} from "@/services/api";
+import TableTimescales from "@/components/tables/tableTimescales";
 
 export default function Timescale() {
-    const {user, signOut, getUser} = useContext(AuthContext)
-    const router = useRouter()
+    const { register, handleSubmit, reset } = useForm();
+    const [card, setCard] = useState(false)
+    const [errors, setErrors] = useState([])
+    const [success, setSuccess] = useState(false)
+    const [timescale, setTimescale] = useState('')
 
-    useEffect(() => {
-            getUser()
-        },
-        [])
-    // METODO SAIR
-    function exit() {
-        // METODO RESPONSAVEL POR DESTRUIR O COOKIE DO TOKEN, E REDIRECIONAR PRA TELA INICIAL
-        signOut()
+    async function openCard() {
+        setSuccess(false)
+        setErrors([])
+        setCard(true)
+        reset()
     }
 
+    async function closeCard() {
+        setTimescale('')
+        setSuccess(false)
+        setErrors([])
+        setCard(false)
+        reset()
+    }
+
+    // METODO RESPONSAVEL POR CADASTRAR A ESCALA NO BANCO
+    async function handleSaveTimescale(data) {
+        const response = !timescale.id ? await api.post('timescale', data)
+                .then(response => {
+                    if (response.data.id) {
+                        setTimescale('')
+                        setErrors([])
+                        setSuccess(true)
+                    }
+                }).catch(e => {
+                    setErrors(e.response.data.errors)
+                }) :
+            (await api.put(`timescale/${timescale.id}`, data)
+                .then(response => {
+                    if (response.data.id) {
+                        setErrors([])
+                        setSuccess(true)
+                        setTimescale(response.data)
+                    }
+                }).catch(e => {
+                    setErrors(e.response.data.errors)
+                }))
+
+        reset()
+    }
+
+    const timescaleEdit = (item) => {
+        setTimescale(item)
+        openCard()
+    }
     return (
         <div>
             <Head>
                 <title>Escalas</title>
             </Head>
 
-            <Disclosure as="nav" className="bg-gray-800">
-                {({open}) => (
-                    <>
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex items-center justify-between h-16">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0">
-                                        <img
-                                            className="h-8 w-8"
-                                            src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                                            alt="Workflow"
-                                        />
-                                    </div>
-                                    <div className="hidden md:block">
-                                        <div className="ml-10 flex items-baseline space-x-4">
-                                            {navigation.map((item, itemIdx) =>
-                                                itemIdx === 1 ? (
-                                                    <Fragment key={item}>
-                                                        {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                                                        <a href=''
-                                                           className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium">
-                                                            {item}
-                                                        </a>
-                                                    </Fragment>
-                                                ) : (
-                                                    <a
-                                                        key={item}
-                                                        href={item.toLowerCase()}
-                                                        className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-                                                    >
-                                                        {item}
-                                                    </a>
-                                                )
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="hidden md:block">
-                                    <div className="ml-4 flex items-center md:ml-6">
-                                        <div>
-                                            <b className='text-white'>{(user && user.name) ? user.name : ''}</b>
-                                        </div>
-                                        <a
-                                            onClick={exit}
-                                            key='exit'
-                                            href=""
-                                            className="ml-5 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-[15px] font-medium"
-                                        >
-                                            Sair
-                                        </a>
-                                    </div>
-                                </div>
-                                <div className="-mr-2 flex md:hidden">
-                                    {/* Mobile menu button */}
-                                    <Disclosure.Button
-                                        className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
-                                        <span className="sr-only">Open main menu</span>
-                                        {open ? (
-                                            <XIcon className="block h-6 w-6" aria-hidden="true"/>
-                                        ) : (
-                                            <MenuIcon className="block h-6 w-6" aria-hidden="true"/>
-                                        )}
-                                    </Disclosure.Button>
-                                </div>
-                            </div>
-                        </div>
-                        <Disclosure.Panel className="md:hidden">
-                            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                                {navigation.map((item, itemIdx) =>
-                                    itemIdx === 0 ? (
-                                        <Fragment key={item}>
-                                            {/* Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" */}
-                                            <a href="#"
-                                               className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium">
-                                                {item}
-                                            </a>
-                                        </Fragment>
-                                    ) : (
-                                        <a
-                                            key={item}
-                                            href="#"
-                                            className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
-                                        >
-                                            {item}
-                                        </a>
-                                    )
-                                )}
-                            </div>
-                            <div className="pt-4 pb-3 border-t border-gray-700">
-                                <div className="flex items-center px-5">
-                                    <div className="ml-3">
-                                        <div
-                                            className="text-base font-medium leading-none text-white">{(user && user.name) ? user.name : ''}</div>
-                                        <div
-                                            className="text-sm font-medium leading-none text-gray-400">{(user && user.email) ? user.email : ''}</div>
-                                    </div>
-                                </div>
-                                <div className="mt-3 px-2 space-y-1">
-                                    <a
-                                        onClick={signOut}
-                                        className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
-                                    >
-                                        Sign out
-                                    </a>
-                                </div>
-                            </div>
-                        </Disclosure.Panel>
-                    </>
-                )}
-            </Disclosure>
+            {
+                // COMPONENTE HEADER DA PAGINA
+            }
+            <Header/>
 
             <header className="bg-white shadow">
                 <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
@@ -147,51 +76,93 @@ export default function Timescale() {
                 </div>
             </header>
             <main>
-                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                    <div className="px-4 py-6 sm:px-0">
-                        <TableTimescales/>
+                {card ? (
+
+                    <div>
+
+                        <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                            <div className="bg-white shadow-xl p-4 rounded-lg">
+                                <div className="px-4 sm:px-0 flex justify-end">
+                                    <h2 className="text-xl font-semibold mb-2 mr-96">Dados da Escala</h2>
+                                    <button onClick={closeCard} className="bg-red-400 hover:bg-red-500 text-white font-bold px-4 rounded">X</button>
+                                </div>
+                                <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSaveTimescale)}>
+                                    <div className="rounded-md shadow-sm -space-y-px">
+                                        <div>
+                                            <input
+                                                {...register('nome')}
+                                                id="nome"
+                                                name="nome"
+                                                type="nome"
+                                                required
+                                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                placeholder="Digite o nome da escala"
+                                                defaultValue={timescale.nome ? timescale.nome: '' }
+                                            />
+                                        </div>
+                                        <div>
+                                            <input
+                                                {...register('escala')}
+                                                id="escala"
+                                                name="escala"
+                                                type="escala"
+                                                required
+                                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                placeholder="Digite a escala"
+                                                defaultValue={timescale.escala ? timescale.escala: '' }
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <button
+                                            type="submit"
+                                            className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                        >
+                                    <span className="absolute left-0 inset-y-0 flex items-center pl-3">
+                                    </span>
+                                            { timescale.id ? <p>Editar cadastro da Escala</p> : <p>Cadastrar Escala</p>}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        {
+                            success ? (
+                                <div role="alert">
+                                    <div className="bg-green-500 text-white font-bold rounded-t px-4 py-4">
+                                        { timescale.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
+                                    </div>
+                                </div>
+                            ) : ''
+                        }
+
+                        {(errors.nome || errors.escala) ? (
+                            <div role="alert">
+                                <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+                                    Danger
+                                </div>
+                                <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                                    <p>{errors.nome ? errors.nome : ''}</p>
+                                    <p>{errors.escala ? errors.escala : ''}</p>
+                                </div>
+                            </div>
+                        ) : ''}
+
                     </div>
-                </div>
+                ) : (
+                    <div className="px-4 py-6 sm:px-0">
+                        <div className="px-4 py-6 sm:px-0 flex justify-end">
+                            <button onClick={openCard} className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">
+                                Adicionar Escala
+                            </button>
+                        </div>
+                        <TableTimescales onEdit={timescaleEdit}/>
+                    </div>
+                )}
             </main>
         </div>
     )
 }
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-    // PASSANDO O CONTEXTO DA REQUISICAO
-    const apiClient = getAPIClient(ctx) // METODO RESPONSAVEL POR COLOCAR O TOKEN NO CABECALHO DE TODA REQUISICAO QUE NOS FAZERMOS FUTURAMENTE
-
-    const token = parseCookies(ctx)
-
-    if (!token.m2_token) {
-        return {
-            redirect: {
-                destination: '/',
-                permanent: false
-            }
-        }
-    }
-
-    const response = await apiClient.get('/user')
-        .then((response => {
-            return response.data
-        }))
-        .catch((e => {
-            console.log(e)
-        }))
-
-    if(!response) {
-        destroyCookie(ctx, 'm2_token') // DESTROI O COOKIE, E REDIRECIONA PRA TELA DE LOGIN
-        return {
-            redirect: {
-                destination: '/',
-                permanent: false
-            }
-        }
-    }
-
-
-    return {
-        props: {}
-    }
-}
+export const getServerSideProps = withAuthServerSideProps('/');
