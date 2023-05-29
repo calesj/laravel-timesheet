@@ -25,6 +25,10 @@ class TimescaleController extends Controller
      */
     public function index()
     {
+        if(!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         try {
             $timescales = Timescale::all();
 
@@ -45,6 +49,10 @@ class TimescaleController extends Controller
      */
     public function show(int $id)
     {
+        if(!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         try {
             $timescale = Timescale::find($id);
 
@@ -65,6 +73,10 @@ class TimescaleController extends Controller
      */
     public function store(Request $request)
     {
+        if(!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         $validation = FormValidation::validar($request->all(), $this->rules);
 
         if ($validation !== true) {
@@ -91,6 +103,9 @@ class TimescaleController extends Controller
      */
     public function update($id, Request $request)
     {
+        if(!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
 
         $validation = FormValidation::validar($request->all(), $this->rules);
 
@@ -117,6 +132,10 @@ class TimescaleController extends Controller
      */
     public function destroy($id)
     {
+        if(!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
         $timescale = Timescale::find($id);
         if (!$timescale) {
             return response()->json('Recurso nao encontrado', 204);
@@ -126,8 +145,7 @@ class TimescaleController extends Controller
             $timescale->delete();
             return response()->json(['message' => 'Item deletado com sucesso']);
         } catch (\Exception $e) {
-            return $e;
-            //return response()->json(['message' => 'Desculpe, algo deu errado']);
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
 
     }
