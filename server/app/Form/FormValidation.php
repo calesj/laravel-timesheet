@@ -5,6 +5,12 @@ use Illuminate\Support\Facades\Validator;
 
 Class FormValidation
 {
+    /**
+     * METODO RESPONSAVEL POR FAZER A VALIDACAO DOS CAMPOS
+     * @param array $data
+     * @param array $rules
+     * @return \Illuminate\Http\JsonResponse|true
+     */
     static function validar(array $data, array $rules)
     {
         $message = [
