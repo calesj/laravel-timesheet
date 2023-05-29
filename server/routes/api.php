@@ -18,6 +18,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// CASO AS ROTAS NAO PASSEM PELO MIDDLEWARE, CAIRA AUTOMATICAMENTE NESSA ROTA
+Route::get('/401', function () {
+    return response()->json('Unauthorized', 401);
+})->name('login');
+
 // ROTAS DO HORARIO DE ESCALA
 Route::middleware('auth:sanctum')->controller(\App\Http\Controllers\TimescaleController::class)->prefix('timescale')->group(function () {
     Route::get('/', 'index');
