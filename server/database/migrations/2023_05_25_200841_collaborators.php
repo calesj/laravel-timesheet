@@ -19,7 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('timescale_id');
             $table->timestamps();
 
-            $table->foreign('timescale_id')->references('id')->on('timescales');
+            $table->foreign('timescale_id')->references('id')->on('timescales')->onDelete('cascade');
         });
     }
 
