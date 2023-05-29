@@ -3,7 +3,7 @@ import {Disclosure} from "@headlessui/react";
 import {MenuIcon, XIcon} from "@heroicons/react/outline";
 import {AuthContext} from "@/contexts/AuthContext";
 import {useRouter} from "next/router";
-const navigation = ['Dashboard', 'Escalas', 'Projects', 'Calendar', 'Reports']
+const navigation = ['Dashboard', 'Escalas']
 
 
 export default function Header() {
@@ -40,7 +40,7 @@ export default function Header() {
                                         {navigation.map((item) => (
                                             <a
                                                 key={item}
-                                                href={item.toLowerCase()}
+                                                href={"../../" + item.toLowerCase()}
                                                 className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                                             >
                                                 {item}
