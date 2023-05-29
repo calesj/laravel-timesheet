@@ -5,9 +5,7 @@ import {withAuthServerSideProps} from "@/components/getServerSideProps/getServer
 import {useForm} from 'react-hook-form';
 import React, {useEffect, useState} from "react";
 import {api} from "@/services/api";
-import TableTimescales from "@/components/tables/tableTimescales";
-import {bool} from "prop-types";
-import {loading} from "@/components/loading/loading";
+
 
 export default function Dashboard() {
     const { register, handleSubmit, reset } = useForm();
@@ -153,7 +151,7 @@ export default function Dashboard() {
                                     >
                                     <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                     </span>
-                                        { timescale.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
+                                        { collaborator.id ? <p>Editar Registro</p> : <p>Cadastrar Registro</p>}
                                     </button>
                                 </div>
                             </form>
