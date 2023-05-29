@@ -1,12 +1,13 @@
 import Head from 'next/head'
 import {LockClosedIcon} from "@heroicons/react/outline";
 import {useForm} from 'react-hook-form';
-import {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {AuthContext} from "@/contexts/AuthContext";
 
 export default function Home() {
     const { register, handleSubmit } = useForm();
     const {getUser, registerIn} = useContext(AuthContext)
+    const [errors, setErrors] = useState([])
 
     // VERIFICA SE EXISTE UM TOKEN SALVO NO NAVEGADOR,
     // SE EXISTIR, ELE VAI FAZER A REQUISICAO NA API COM ESSE TOKEN,
@@ -17,7 +18,19 @@ export default function Home() {
 
     // METODO RESPONSAVEL POR ENVIAR OS PARAMETROS DO FORMULARIO, AO METODO DE LOGAR DO CONTEXT
     async function handleRegister(data) {
-        await registerIn(data)
+        try {
+            const response = await registerIn(data);
+            console.log(response);
+            // Realizar outras ações em caso de sucesso
+        } catch (error) {
+            if (error.response.data.errors && error.response.status === 422) {
+                // Lidar com o erro 422 (Validação) de forma personalizada
+                setErrors(error.response.data.errors)
+            } else {
+                // Lidar com outros erros de forma personalizada
+                console.log('Ocorreu um erro na API');
+            }
+        }
     }
 
     return (
@@ -78,7 +91,7 @@ export default function Home() {
                     <div className="flex items-center justify-between">
                         <div className="text-sm">
                             <a href="/" className="font-medium text-indigo-600 hover:text-indigo-500">
-                                Já tem uma conta? <b>Registrar</b>
+                                Já tem uma conta? <b>Entrar</b>
                             </a>
                         </div>
                     </div>
@@ -91,9 +104,21 @@ export default function Home() {
               <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                 <LockClosedIcon className="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" aria-hidden="true" />
               </span>
-                            Entrar
+                            Registrar
                         </button>
                     </div>
+                    {(errors.password || errors.name || errors.email) ? (
+                        <div role="alert">
+                            <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+                                Danger
+                            </div>
+                            <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                                <p>{errors.nome ? errors.nome : '' }</p>
+                                <p>{errors.email ? errors.email: '' }</p>
+                                <p>{errors.password ? errors.password : '' }</p>
+                            </div>
+                        </div>
+                    ) : ''}
                 </form>
             </div>
         </div>
