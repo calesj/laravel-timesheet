@@ -3,12 +3,10 @@ import {LockClosedIcon} from "@heroicons/react/outline";
 import {useForm} from 'react-hook-form';
 import {useContext, useEffect} from "react";
 import {AuthContext} from "@/contexts/AuthContext";
-import {useRouter} from "next/router";
 
 export default function Home() {
   const { register, handleSubmit } = useForm();
   const {signIn, getUser} = useContext(AuthContext)
-  const router = useRouter()
 
   // VERIFICA SE EXISTE UM TOKEN SALVO NO NAVEGADOR,
   // SE EXISTIR, ELE VAI FAZER A REQUISICAO NA API COM ESSE TOKEN,
