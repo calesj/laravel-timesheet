@@ -6,6 +6,7 @@ use App\Form\FormValidation;
 use App\Models\Timescale;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TimescaleController extends Controller
 {
@@ -24,9 +25,17 @@ class TimescaleController extends Controller
      */
     public function index()
     {
-        $timescales = Timescale::all();
+        try {
+            $timescales = Timescale::all();
 
-        return response()->json($timescales);
+            if (!$timescales) {
+                return response()->json(['Recurso nao encontado'], 204);
+            }
+
+            return response()->json($timescales);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
+        }
     }
 
     /**
@@ -34,11 +43,19 @@ class TimescaleController extends Controller
      * @param $id
      * @return JsonResponse
      */
-    public function show($id)
+    public function show(int $id)
     {
-        $timescale = Timescale::find($id);
+        try {
+            $timescale = Timescale::find($id);
 
-        return response()->json($timescale);
+            if (!$timescale) {
+                return response()->json(['Recurso nao encontado'], 204);
+            }
+
+            return response()->json($timescale);
+        } catch (\Exception $exception) {
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
+        }
     }
 
     /**
@@ -101,15 +118,16 @@ class TimescaleController extends Controller
     public function destroy($id)
     {
         $timescale = Timescale::find($id);
-        if(!$timescale) {
-            return response()->json('Recurso nao encontrado');
+        if (!$timescale) {
+            return response()->json('Recurso nao encontrado', 204);
         }
 
         try {
             $timescale->delete();
             return response()->json(['message' => 'Item deletado com sucesso']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Desculpe, algo deu errado']);
+            return $e;
+            //return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
 
     }
