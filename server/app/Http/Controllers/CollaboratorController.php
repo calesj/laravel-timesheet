@@ -31,7 +31,7 @@ class CollaboratorController extends Controller
     public function index()
     {
         try {
-            $collaborators = Collaborator::all();
+            $collaborators = Collaborator::with('timescale')->get();
 
             if (!$collaborators) {
                 return response()->json(['Recurso nao encontado'],204);
@@ -94,7 +94,7 @@ class CollaboratorController extends Controller
                         'timescale_id' => 'Por favor, escolha um horario de escala valido'
                     ]
                 ];
-                return response()->json($validate);
+                return response()->json('Oba, deu certo!');
             }
 
 
@@ -123,7 +123,7 @@ class CollaboratorController extends Controller
 
             // CASO NAO EXISTA ESSE USUARIO
             if (!$collaborator) {
-                return response()->json('Recurso nao encontrado');
+                return response()->json('Recurso nao encontrado',204);
             }
 
             $collaborator->nome = $request['nome'];
@@ -147,6 +147,25 @@ class CollaboratorController extends Controller
 
         } catch (\Exception $e) {
             return response()->json($e);
+        }
+    }
+
+    /**
+     * METODO RESPONSAVEL POR DELETAR O REGISTRO DA TABELA COLLABORATORS
+     * @param $id
+     * @return JsonResponse
+     */
+    public function destroy($id) {
+        $collaborator = Collaborator::find($id);
+        if (!$collaborator) {
+            return response()->json('Recurso nao encontrado', 204);
+        }
+
+        try {
+            $collaborator->delete();
+            return response()->json(['message' => 'Item deletado com sucesso']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
     }
 }
