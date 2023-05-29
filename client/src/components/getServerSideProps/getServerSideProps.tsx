@@ -1,6 +1,6 @@
 import {GetServerSideProps, GetServerSidePropsContext} from "next";
-import {getAPIClient} from "@/services/axios";
 import {destroyCookie, parseCookies} from "nookies";
+import {api} from "@/services/api";
 
 export const withAuthServerSideProps = (redirectPath = '/'): GetServerSideProps => {
     return async (ctx: GetServerSidePropsContext) => {
