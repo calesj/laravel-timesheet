@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
 import {api} from "@/services/api";
-import {loading} from "@/components/loading/loading";
 export default function TableCollaborators({ onEdit }) {
     const [collaborators, setCollaborators] = useState([]);
 
