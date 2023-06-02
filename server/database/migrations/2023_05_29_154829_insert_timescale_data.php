@@ -12,7 +12,8 @@ return new class extends Migration
     {
         DB::table('timescales')->insert([
             'nome' => 'Escala da Manha',
-            'escala' => '06:00 as 13:00'
+            'entrada' => '09:00:00',
+            'saida' => '18:00:00'
             ]);
     }
 
