@@ -1,8 +1,8 @@
-import {createContext, Dispatch, useEffect, useState} from "react"
+import {createContext, useState} from "react"
 import {useRouter} from "next/router";
-import {destroyCookie, parseCookies, setCookie} from 'nookies'
 import axios from "axios"
-import {api} from "@/services/api";
+import {api                                                                                                                                 } from "@/services/api";
+import Cookies from "js-cookie";
 
 // TIPAGEM DO USUARIO
 type User = {
@@ -28,7 +28,6 @@ type AuthContextType = {
     user: User
     getUser: any
     signIn: (data: SignInData) => Promise<void>
-    signOut: any
     registerIn: (data: registerInData) => Promise<void>
 }
 
@@ -48,15 +47,15 @@ export function AuthProvider({children}) {
     // SE TIVER, ELE REDIRECIONA PARA A PAGINA DE DASHBOARD
     // E SETA AS INFORMACOES DO USUARIO
     async function getUser(route = null) {
-        const token = parseCookies()
-        if (token.m2_token) {
+        const token = Cookies.get('m2_token')
+        if (token) {
             let response =  await api.get('/user')
                 .then((response => {
                     return response
                 }))
                 .catch((e => {
                     // DESTROI O COOKIE
-                    destroyCookie(undefined, 'm2_token') // DESTROI O COOKIE
+                    Cookies.remove('m2_token') // DESTROI O COOKIE
                 }));
             // VERIFICA SE EXISTE UM id, DENTRO DO OBJETO, E SE ELE NAO ESTA VAZIO
             if (response?.data.id && response.data.id !== '') {
@@ -68,7 +67,7 @@ export function AuthProvider({children}) {
                 }
 
             } else {
-                destroyCookie(undefined, 'm2_token') // DESTROI O COOKIE, E REDIRECIONA PRA TELA DE LOGIN
+                Cookies.remove('m2_token') // DESTROI O COOKIE, E REDIRECIONA PRA TELA DE LOGIN
             }
         }
     }
@@ -80,8 +79,8 @@ export function AuthProvider({children}) {
         })
 
         if (response.data.access_token) {
-            setCookie(undefined, 'm2_token', response.data.access_token, {
-                maxAge: 60 * 29, // TEMPO DE DURACAO DO TOKEN
+            Cookies.set('m2_token', response.data.access_token, {
+                expires: 10 / (24 * 60), // TEMPO DE DURACAO DO TOKEN
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${response.data.access_token}`
@@ -101,8 +100,8 @@ export function AuthProvider({children}) {
         })
 
         if (response.data.access_token) {
-            setCookie(undefined, 'm2_token', response.data.access_token, {
-                maxAge: 60 * 29, // TEMPO DE DURACAO DO TOKEN
+            Cookies.set('m2_token', response.data.access_token, {
+               expires: 10 / (24 * 60), // TEMPO DE DURACAO DO TOKEN
             })
 
             api.defaults.headers['Authorization'] = `Bearer ${response.data.access_token}`
@@ -115,16 +114,9 @@ export function AuthProvider({children}) {
         return response;
     }
 
-    // METODO SAIR
-    function signOut() {
-        // METODO RESPONSAVEL POR DESTRUIR O COOKIE DO TOKEN, E REDIRECIONAR PRA TELA INICIAL
-        destroyCookie(undefined, 'm2_token')
-        router.push('/')
-    }
-
     return (
 
-        <AuthContext.Provider value={{ user, getUser, isAuthenticated, signIn, signOut, registerIn }}>
+        <AuthContext.Provider value={{ user, getUser, isAuthenticated, signIn, registerIn }}>
             {children}
         </AuthContext.Provider>
     )
