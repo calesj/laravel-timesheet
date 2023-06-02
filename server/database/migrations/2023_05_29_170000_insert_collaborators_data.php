@@ -11,11 +11,18 @@ return new class extends Migration
     public function up(): void
     {
         DB::table('collaborators')->insert([
-            'nome' => 'Cales Junes',
             "matricula" => '9992',
             "cpf" => "213123",
             "timescale_id" => "1",
+            'user_id' => 1
             ]);
+
+        DB::table('collaborators')->insert([
+            "matricula" => '1000',
+            "cpf" => "44455",
+            "timescale_id" => "1",
+            'user_id' => 2
+        ]);
     }
 
     /**
@@ -23,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::table('collaborators')->where('nome', 'Cales Junes')->delete();
+        DB::table('collaborators')->where('user_id', '1')->delete();
     }
 };
