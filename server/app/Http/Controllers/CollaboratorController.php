@@ -35,7 +35,7 @@ class CollaboratorController extends Controller
             return response()->json(['Unauthorized'], 401);
         }
         try {
-            $collaborators = Collaborator::with('timescale')->get();
+            $collaborators = Collaborator::with(['timescale', 'user'])->get();
 
             if (!$collaborators) {
                 return response()->json(['Recurso nao encontado'], 204);
@@ -68,50 +68,6 @@ class CollaboratorController extends Controller
             return response()->json($collaborator);
         } catch (\Exception $exception) {
             return response()->json(['message' => 'Desculpe, algo deu errado']);
-        }
-    }
-
-    /**
-     * METODO RESPONSAVEL POR FAZER UMA INSERÇÃO NO BANCO
-     * @param Request $request
-     * @return JsonResponse|true
-     */
-    public function store(Request $request)
-    {
-        if (!Auth::check()) {
-            return response()->json(['Unauthorized'], 401);
-        }
-
-        $validate = FormValidation::validar($request->all(), $this->rules);
-
-        if ($validate !== true) {
-            return $validate;
-        }
-
-        try {
-            $collaborator = new Collaborator();
-            $collaborator->nome = $request['nome'];
-            $collaborator->matricula = $request['matricula'];
-            $collaborator->cpf = $request['cpf'];
-            $collaborator->timescale_id = $request['timescale_id'];
-            $timescale = Timescale::find($request['timescale_id']);
-
-            // VERIFICA SE O ID DO TIMESCALE, EXISTE NA TABELA timescale
-            if ($timescale) {
-                $collaborator->save();
-                return response()->json($collaborator);
-            } else {
-                $validate = [
-                    'errors' => [
-                        'timescale_id' => 'Por favor, escolha um horario de escala valido'
-                    ]
-                ];
-                return response()->json('Oba, deu certo!');
-            }
-
-
-        } catch (\Exception $e) {
-            return response()->json($e);
         }
     }
 
