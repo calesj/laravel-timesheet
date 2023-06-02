@@ -25,11 +25,29 @@ class Collaborator extends Model
     ];
 
     /**
-     * UM COLABORADOR, SO PODE TER UMA ESCALA
+     * UM COLABORADOR, SO PODE PERTENCER A UMA ESCALA
      * @return BelongsTo
      */
     public function timescale(): BelongsTo
     {
         return $this->belongsTo(Timescale::class);
+    }
+
+    /**
+     * UM COLABORADOR, É UM USUARIO
+     * @return BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    /**
+     * UM COLABORADOR, PODE TER VARIOS REGISTROS DE PONTO
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function timeRecords()
+    {
+        return $this->hasMany(TimeRecord::class);
     }
 }
