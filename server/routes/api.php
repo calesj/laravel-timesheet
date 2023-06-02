@@ -15,7 +15,19 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    $user = $request->user();
+    $user->load(['collaborator.timeRecords' => function ($query) {
+        $query->where('data', date('Y/m/d'));
+    }]);
+
+    return $user;
+});
+
+Route::middleware(['auth:sanctum', 'admin'])->get('/testeAdmin', function (Request $request) {
+    $user = $request->user();
+    $user->load('userPrivilege');
+
+    return $user;
 });
 
 // CASO AS ROTAS NAO PASSEM PELO MIDDLEWARE, CAIRA AUTOMATICAMENTE NESSA ROTA
@@ -24,7 +36,7 @@ Route::get('/401', function () {
 })->name('login');
 
 // ROTAS DO HORARIO DE ESCALA
-Route::middleware('auth:sanctum')->controller(\App\Http\Controllers\TimescaleController::class)->prefix('timescale')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->controller(\App\Http\Controllers\TimescaleController::class)->prefix('timescale')->group(function () {
     Route::get('/', 'index');
     Route::get('/{id}', 'show');
     Route::post('/', 'store');
@@ -36,14 +48,31 @@ Route::middleware('auth:sanctum')->controller(\App\Http\Controllers\TimescaleCon
 Route::middleware('auth:sanctum')->controller(\App\Http\Controllers\CollaboratorController::class)->prefix('collaborator')->group(function () {
     Route::get('/', 'index');
     Route::get('/{id}', 'show');
-    Route::post('/', 'store');
     Route::put('/{id}', 'update');
     Route::delete('/{id}', 'destroy');
 });
 
+// ROTAS DO REGISTRO DE PONTO
+Route::middleware('auth:sanctum')->controller(\App\Http\Controllers\TimeRecordController::class)->prefix('time_record')->group(function () {
+    Route::get('/', 'index');
+    Route::get('/{collaboratorId}', 'show');
+    Route::put('entry/{collaboratorId}', 'entry');
+    Route::put('lunch/{collaboratorId}', 'lunch');
+    Route::put('return_lunch/{userId}', 'returnFromLunch');
+    Route::put('exit/{collaboratorId}', 'exit');
+
+    Route::put('update/{collaboratorId}', 'updateTimeRecords');
+
+
+});
+
 Route::controller(\App\Http\Controllers\AuthController::class)->group(function () {
-    Route::post('/register', 'register');
     Route::post('/login', 'login');
+});
+
+Route::middleware(['auth:sanctum', 'admin'])->controller(\App\Http\Controllers\AuthController::class)->group(function () {
+    Route::post('/register', 'register');
+    Route::put('/update/{collaboratorId}', 'updateCollaborator');
 });
 
 
