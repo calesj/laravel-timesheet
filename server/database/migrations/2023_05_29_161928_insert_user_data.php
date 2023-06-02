@@ -14,7 +14,15 @@ return new class extends Migration
         DB::table('users')->insert([
             'name' => 'admin',
             'email' => 'admin@admin.com',
-            'password' => bcrypt('admin')
+            'password' => bcrypt('admin'),
+            'user_privilege_id' => 2
+        ]);
+
+        DB::table('users')->insert([
+            'name' => 'teste',
+            'email' => 'teste@teste.com',
+            'password' => bcrypt('teste'),
+            'user_privilege_id' => 1
         ]);
     }
 
@@ -24,5 +32,6 @@ return new class extends Migration
     public function down(): void
     {
         DB::table('users')->where('email', 'admin@admin.com')->delete();
+        DB::table('users')->where('email', 'teste@teste.com')->delete();
     }
 };
