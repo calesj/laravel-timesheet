@@ -69,7 +69,7 @@ export default function TableTimescales({ onEdit }) {
                                             {item.nome}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.escala ? item.escala : ''}
+                                            {item.entrada ? item.entrada + ' as ' + item.saida : ''}
                                         </td>
                                         <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                             <button
