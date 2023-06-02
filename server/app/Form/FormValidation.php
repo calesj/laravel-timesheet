@@ -16,7 +16,7 @@ Class FormValidation
         $message = [
             'required' => 'O campo :attribute é obrigatório',
             'email' => 'O formato do email esta invalido',
-            'min' => 'sao necessarios pelomenos 8 caracteres',
+            'min' => 'O campo :attribute sao necessarios pelomenos 8 caracteres',
             'unique' => 'email ja existe'
         ];
         // FAZENDO AS VALIDACOES
