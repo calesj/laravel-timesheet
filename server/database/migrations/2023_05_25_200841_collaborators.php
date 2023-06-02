@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('collaborators', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
             $table->string('matricula');
             $table->string('cpf');
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('timescale_id');
             $table->timestamps();
 
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('timescale_id')->references('id')->on('timescales')->onDelete('cascade');
         });
     }
