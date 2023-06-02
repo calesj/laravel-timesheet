@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Form\FormValidation;
+use App\Models\Collaborator;
+use App\Models\TimeRecord;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Mockery\Exception;
 
 /**
@@ -17,7 +21,9 @@ class AuthController extends Controller
     private $rules = [
         'name' => 'required|string|max:255',
         'email' => 'required|email|string|max:255|unique:users',
-        'password' => 'required|string|min:8'
+        'password' => 'required|string|min:8',
+        'matricula' => 'required',
+        'cpf' => 'required'
     ];
 
     /**
@@ -39,15 +45,17 @@ class AuthController extends Controller
             $user->name = $request['name'];
             $user->email = $request['email'];
             $user->password = bcrypt($request['password']);
+            $user->user_privilege_id = 1;
             $user->save();
 
-            // CRIANDO TOKEN DE ACESSO DO USUARIO, VALIDO POR 30 MINUTOS
-            $accessToken = $user->createToken('access_token', [''], now()->addMinute(30))->plainTextToken;
+            $collaborator = new Collaborator();
+            $collaborator->matricula = $request['matricula'];
+            $collaborator->cpf = $request['cpf'];
+            $collaborator->user_id = $user->id;
+            $collaborator->timescale_id = $request['timescale_id'];
+            $collaborator->save();
 
-            return response()->json([
-                'user' => $user,
-                'access_token' => $accessToken
-            ]);
+            return response()->json($collaborator);
         } catch (Exception $e) {
             return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
@@ -79,6 +87,19 @@ class AuthController extends Controller
             // PEGANDO AS INFORMACOES DO USUARIO
             $user = $request->user();
 
+            $collaborator = Collaborator::select('id')->where('user_id', $user->id)->first();
+
+            $dataAtual = Carbon::now('America/Sao_Paulo')->format('y-m-d');
+
+            $time_record = TimeRecord::select('id')->where('collaborator_id', $collaborator->id)->where('data', $dataAtual)->first();
+
+            if (!$time_record) {
+                $time_record = new TimeRecord();
+                $time_record->data = date('Y/m/d');
+                $time_record->collaborator_id = $collaborator->id;
+                $time_record->save();
+            }
+
             // CRIA UM TOKEN DE AUTENTICA;AO VALIDO POR 30 MINUTOS
             $token = $user->createToken('access_token', [''], now()->addMinute(30))->plainTextToken;
 
@@ -92,5 +113,46 @@ class AuthController extends Controller
         return response()->json([
             'errors' => ['login' => 'Usuarios ou senha invalidos']
         ]);
+    }
+
+    public function updateCollaborator(Request $request, int $userId)
+    {
+        $rules = [
+            'name' => 'required|string|max:255',
+            'email' => [
+                'required',
+                'email',
+                'string',
+                'max:255',
+                Rule::unique('users')->ignore($userId),
+            ],
+            'matricula' => 'required',
+            'cpf' => 'required',
+            'timescale_id' => 'required'
+        ];
+        $validate = FormValidation::validar($request->all(), $rules);
+
+        if ($validate !== true) {
+            return $validate;
+        }
+
+        try {
+            $user = User::find($userId);
+
+            $user->name = $request['name'];
+            $user->email = $request['email'];
+            $user->save();
+
+            $collaborator = Collaborator::find($user->collaborator->id)->load('user');
+            $collaborator->matricula = $request['matricula'];
+            $collaborator->cpf = $request['cpf'];
+            $collaborator->user_id = $user->id;
+            $collaborator->timescale_id = $request['timescale_id'];
+            $collaborator->save();
+
+            return response()->json($collaborator);
+        } catch (Exception $e) {
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
+        }
     }
 }
