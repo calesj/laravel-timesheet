@@ -3,12 +3,13 @@ import {Disclosure} from "@headlessui/react";
 import {MenuIcon, XIcon} from "@heroicons/react/outline";
 import {AuthContext} from "@/contexts/AuthContext";
 import {useRouter} from "next/router";
+import Cookies from "js-cookie";
 const navigation = ['Dashboard', 'Escalas']
 
 
 export default function Header() {
 
-    const {user, signOut, getUser} = useContext(AuthContext)
+    const {user, getUser} = useContext(AuthContext)
     const router = useRouter()
 
     useEffect(() => {
@@ -17,8 +18,11 @@ export default function Header() {
         [])
     // METODO SAIR
     function exit() {
-        // METODO RESPONSAVEL POR DESTRUIR O COOKIE DO TOKEN, E REDIRECIONAR PRA TELA INICIAL
-        signOut()
+        // Destruir o cookie
+        Cookies.remove('m2_token');
+
+        // Redirecionar para a página de login
+        router.replace("/");
     }
 
     return (
@@ -54,14 +58,11 @@ export default function Header() {
                                     <div>
                                         <b className='text-white'>{(user && user.name) ? user.name : ''}</b>
                                     </div>
-                                    <a
+                                    <button
                                         onClick={exit}
-                                        key='exit'
-                                        href=""
+                                        key="exit"
                                         className="ml-5 text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-[15px] font-medium"
-                                    >
-                                        Sair
-                                    </a>
+                                    >Sair</button>
                                 </div>
                             </div>
                             <div className="-mr-2 flex md:hidden">
@@ -110,12 +111,12 @@ export default function Header() {
                                 </div>
                             </div>
                             <div className="mt-3 px-2 space-y-1">
-                                <a
-                                    onClick={signOut}
+                                <button
+                                    onClick={exit}
                                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                                 >
                                     Sign out
-                                </a>
+                                </button>
                             </div>
                         </div>
                     </Disclosure.Panel>
