@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('timescales', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->string('escala');
+            $table->time('entrada');
+            $table->time('saida');
             $table->timestamps();
         });
     }
