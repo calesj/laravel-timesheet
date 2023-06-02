@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'user_privilege_id'
     ];
 
     /**
@@ -31,6 +32,7 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'user_privilege_id'
     ];
 
     /**
@@ -42,4 +44,22 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    /**
+     * UM USUARIO SO PODE TER 1 PRIVILEGIO
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function userPrivilege()
+    {
+        return $this->belongsTo(UserPrivilege::class);
+    }
+
+    /**
+     * UM USUARIO SO TER UM COLABORADOR
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function collaborator()
+    {
+        return $this->hasOne(Collaborator::class);
+    }
 }
