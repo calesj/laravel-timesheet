@@ -6,6 +6,7 @@ import React, {useState} from "react";
 import {loading} from "@/components/loading/loading";
 import {api} from "@/services/api";
 import TableTimescales from "@/components/tables/tableTimescales";
+import TableTimeRecords from "@/components/tables/tableTimeRecords";
 
 export default function Timescale() {
     const { register, handleSubmit, reset } = useForm();
@@ -157,7 +158,7 @@ export default function Timescale() {
                                 Adicionar Escala
                             </button>
                         </div>
-                        <TableTimescales onEdit={timescaleEdit}/>
+                        <TableTimeRecords onEdit={null}/>
                     </div>
                 )}
             </main>
