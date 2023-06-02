@@ -71,10 +71,10 @@ export default function TableCollaborators({ onEdit }) {
                                             {item.id}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.nome}
+                                            {item.user.name}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.timescale.escala ? item.timescale.escala : ''}
+                                            {item.timescale.id ? item.timescale.entrada + ' as ' + item.timescale.saida : ''}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                             {item.matricula}
