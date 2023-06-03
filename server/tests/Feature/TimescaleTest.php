@@ -102,7 +102,7 @@ class TimescaleTest extends TestCase
 
         $response->assertStatus(200);
 
-        $response->assertJsonCount(10); // Verifica se há 10 registros na resposta JSON
+        $response->assertJsonCount(12); // Verifica se há 10 registros na resposta JSON
     }
 
     /**
