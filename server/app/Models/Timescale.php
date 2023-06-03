@@ -19,7 +19,8 @@ class Timescale extends Model
      */
     protected $fillable = [
         'nome',
-        'escala'
+        'entrada',
+        'saida'
     ];
 
     /**
