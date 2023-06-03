@@ -54,8 +54,9 @@ class TimescaleTest extends TestCase
     {
         $response = $this->postJson('/api/timescale/', [
             [
-                'nome' => 'nome Teste',
-                'escala' => 'escala teste'
+                'nome' => 'nome do teste autenticado',
+                'entrada' => '10:00:00',
+                'saida' => '17:00:00'
             ]
         ]);
 
@@ -69,8 +70,9 @@ class TimescaleTest extends TestCase
     public function test_user_auth_timescale_update()
     {
         $response = $this->putJson('/api/timescale/1', [
-                'nome' => 'nome Teste1',
-                'escala' => 'escala teste1'
+            'nome' => 'nome do teste autenticado1',
+            'entrada' => '10:00:01',
+            'saida' => '17:00:01'
         ]);
 
         $response->assertStatus(401);
@@ -126,12 +128,14 @@ class TimescaleTest extends TestCase
     {
         $response = $this->authenticateUser()->postJson('/api/timescale/', [
             'nome' => 'nome do teste autenticado',
-            'escala' => 'escala do teste autenticado'
+            'entrada' => '10:00:00',
+            'saida' => '17:00:00'
         ]);
         $response->assertStatus(200);
         $response->assertJson([
             'nome' => 'nome do teste autenticado',
-            'escala' => 'escala do teste autenticado'
+            'entrada' => '10:00:00',
+            'saida' => '17:00:00'
         ]);
     }
 
@@ -144,12 +148,14 @@ class TimescaleTest extends TestCase
     {
         $response = $this->authenticateUser()->putJson('/api/timescale/1', [
             'nome' => 'nome do teste autenticado',
-            'escala' => 'escala do teste autenticado'
+            'entrada' => '10:00:00',
+            'saida' => '17:00:00'
         ]);
         $response->assertStatus(200);
         $response->assertJson([
             'nome' => 'nome do teste autenticado',
-            'escala' => 'escala do teste autenticado',
+            'entrada' => '10:00:00',
+            'saida' => '17:00:00',
             'id' => '1'
         ]);
     }
