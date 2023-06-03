@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Collaborator;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,11 +13,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
+        // CRIANDO 10 USUARIOS ALEATORIOS
+        $users = \App\Models\User::factory(10)->create();
 
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        // PRA CADA USUARIO, ESTAMOS CADASTRANDO UM COLABORADOR, E RELACINANDO O ID
+        $users->each(function ($user) {
+           Collaborator::factory()->create(['user_id' => $user->id]);
+        });
     }
 }
