@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('password');
             $table->unsignedBigInteger('user_privilege_id');
-            $table->rememberToken();
             $table->timestamps();
 
             $table->foreign('user_privilege_id')->references('id')->on('user_privileges');
