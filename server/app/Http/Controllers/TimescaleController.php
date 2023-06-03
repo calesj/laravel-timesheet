@@ -16,7 +16,8 @@ class TimescaleController extends Controller
      */
     private $rules = [
         'nome' => 'required',
-        'escala' => 'required'
+        'entrada' => 'required',
+        'saida' => 'required'
     ];
 
     /**
@@ -86,7 +87,8 @@ class TimescaleController extends Controller
         try {
             $timescale = new Timescale();
             $timescale->nome = $request['nome'];
-            $timescale->escala = $request['escala'];
+            $timescale->entrada = $request['entrada'];
+            $timescale->saida = $request['saida'];
             $timescale->save();
 
             return response()->json($timescale);
@@ -116,7 +118,8 @@ class TimescaleController extends Controller
         try {
             $timescale = Timescale::find($id);
             $timescale->nome = $request['nome'];
-            $timescale->escala = $request['escala'];
+            $timescale->entrada = $request['entrada'];
+            $timescale->saida = $request['saida'];
             $timescale->save();
 
             return response()->json($timescale);
@@ -147,6 +150,5 @@ class TimescaleController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
-
     }
 }
