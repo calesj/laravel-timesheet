@@ -65,8 +65,6 @@ Route::middleware('auth:sanctum')->controller(\App\Http\Controllers\TimeRecordCo
     Route::put('exit/{collaboratorId}', 'exit');
 
     Route::put('update/{collaboratorId}', 'updateTimeRecords');
-
-
 });
 
 Route::controller(\App\Http\Controllers\AuthController::class)->group(function () {
