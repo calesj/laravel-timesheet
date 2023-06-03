@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Form\FormValidation;
 use App\Models\TimeRecord;
 use App\Models\Timescale;
 use Carbon\Carbon;
@@ -14,6 +15,13 @@ use function PHPUnit\Framework\isEmpty;
  */
 class TimeRecordController extends Controller
 {
+
+    private $rules = [
+        'entrada' => 'required',
+        'almoco_saida' => 'required',
+        'almoco_retorno' => 'required',
+        'saida' => 'required'
+    ];
     /**
      * METODO RESPONSAVEL POR RETORNAR TODOS OS PONTOS BATIDOS
      * @return \Illuminate\Http\JsonResponse
@@ -156,7 +164,7 @@ class TimeRecordController extends Controller
 
             return response()->json($timeRecords);
         } catch (\Exception $exception) {
-            return response()->json($exception);
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
     }
 
@@ -275,7 +283,7 @@ class TimeRecordController extends Controller
 
             return response()->json($timeRecords);
         } catch (\Exception $exception) {
-            return response()->json($exception);
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
     }
 
@@ -287,8 +295,24 @@ class TimeRecordController extends Controller
      */
     public function updateTimeRecords(Request $request, int $collaboratorId)
     {
-        $timeRecords = TimeRecord::where('data', $request['date'])->where('collaborator_id', $collaboratorId)->first();
-        return response()->json($timeRecords);
+        $validate = FormValidation::validar($request->all(), $this->rules);
+        if ($validate !== true) {
+            return $validate;
+        }
+
+        try {
+            $timeRecords = TimeRecord::where('data', $request['data'])->where('collaborator_id', $collaboratorId)->first();
+            $timeRecords->entrada = $request->entrada;
+            $timeRecords->almoco_saida = $request->almoco_saida;
+            $timeRecords->almoco_retorno = $request->almoco_retorno;
+            $timeRecords->saida = $request->saida;
+            $timeRecords->save();
+
+            return response()->json($timeRecords);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
+        }
+
     }
 
     /**
