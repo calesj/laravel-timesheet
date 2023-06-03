@@ -22,8 +22,9 @@ export default function Dashboard({id, type}: { id: any; type: any }) {
         <div>
             <Header/>
 
-            <div className="flex flex-col items-center justify-center min-h-screen">
-                <h1 className="text-3xl mb-6">Botões</h1>
+            <div className="-mt-36 flex flex-col items-center justify-center min-h-screen rounded shadow-xl">
+                <h1 className="text-3xl mb-6">Registro de ponto</h1>
+                <div className="rounded shadow-xl bg-white p-8 mx-auto">
                 <div className="flex flex-wrap justify-center">
                     <button
                         key='entrada'
@@ -58,6 +59,7 @@ export default function Dashboard({id, type}: { id: any; type: any }) {
                         Saída
                     </button>
                 </div>
+            </div>
             </div>
         </div>
     );
