@@ -18,7 +18,7 @@ export const adminVerify = (redirectPath = '/'): GetServerSideProps => {
         }
 
         axios.defaults.headers['Authorization'] = `Bearer ${cookies.m2_token}`
-        const response = await axios.get('http://127.0.0.1:8000/api/testeAdmin/').catch(e => {
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/').catch(e => {
             return {
                 redirect: {
                     destination: redirectPath,
