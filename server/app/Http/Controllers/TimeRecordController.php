@@ -306,6 +306,27 @@ class TimeRecordController extends Controller
             $timeRecords->almoco_saida = $request->almoco_saida;
             $timeRecords->almoco_retorno = $request->almoco_retorno;
             $timeRecords->saida = $request->saida;
+            $timeRecords->saldo_final = 0;
+            // SALDO DE HORAS DA ENTRADA, ATE A HORA DO ALMOCO
+            $timeRecords->saldo_final = $this->calcHours(($this->calcHours($timeRecords->entrada, $timeRecords->almoco_saida)),$timeRecords->saldo_final);
+
+            // Calcula a diferença de horas entre a volta do almoço e a saída
+            $horasVoltaAlmoco = $this->calcHours($timeRecords->almoco_retorno, $timeRecords->saida);
+
+            $user = Auth::user()->load('collaborator.timescale');
+
+            // Soma o valor calculado ao saldo final existente
+            $horasTrabalhadas = $this->sumHours($timeRecords->saldo_final, $horasVoltaAlmoco);
+
+            $escalaEntrada = $user->collaborator->timescale->entrada;
+            $escalaSaida = $user->collaborator->timescale->saida;
+
+            $escala = $this->calcHours($escalaSaida, $escalaEntrada);
+
+            $saldoFinal = $this->subHours($horasTrabalhadas, $escala);
+
+            $timeRecords->saldo_final = $saldoFinal;
+
             $timeRecords->save();
 
             return response()->json($timeRecords);
