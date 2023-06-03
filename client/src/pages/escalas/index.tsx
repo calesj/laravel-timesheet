@@ -31,17 +31,8 @@ export default function Timescale() {
 
     // METODO RESPONSAVEL POR CADASTRAR A ESCALA NO BANCO
     async function handleSaveTimescale(data) {
-        const response = !timescale.id ? await api.post('timescale', data)
-                .then(response => {
-                    if (response.data.id) {
-                        setTimescale('')
-                        setErrors([])
-                        setSuccess(true)
-                    }
-                }).catch(e => {
-                    setErrors(e.response.data.errors)
-                }) :
-            (await api.put(`timescale/${timescale.id}`, data)
+        data.data = timescale.data
+        const response = await api.put(`time_record/update/${timescale?.collaborator_id}`, data)
                 .then(response => {
                     if (response.data.id) {
                         setErrors([])
@@ -50,12 +41,12 @@ export default function Timescale() {
                     }
                 }).catch(e => {
                     setErrors(e.response.data.errors)
-                }))
-
+                })
+        console.log(response)
         reset()
     }
 
-    const timescaleEdit = (item) => {
+    const timeRecordEdit = (item) => {
         setTimescale(item)
         openCard()
     }
@@ -89,7 +80,8 @@ export default function Timescale() {
                                 <h2 className="text-xl font-semibold mb-2 mr-96">Referente ao dia {timescale.data}</h2>
                                 <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSaveTimescale)}>
                                     <div className="rounded-md shadow-sm -space-y-px">
-                                        <div>
+                                        <div className="pb-5">
+                                            <label>Entrada</label>
                                             <InputMask
                                                 {...register('entrada')}
                                                 mask="99:99:99"
@@ -102,8 +94,37 @@ export default function Timescale() {
                                                 defaultValue={timescale.entrada ? timescale.entrada: '' }
                                             />
                                         </div>
+                                        <div className="pb-5">
+                                            <label>Saida para o Almoco</label>
+                                            <InputMask
+                                                {...register('almoco_saida')}
+                                                mask="99:99:99"
+                                                id="almoco_saida"
+                                                name="almoco_saida"
+                                                type="almoco_saida"
+                                                required
+                                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                placeholder="Digite o horario que voce saiu"
+                                                defaultValue={timescale.almoco_saida ? timescale.almoco_saida: '' }
+                                            />
+                                        </div>
+                                        <div className="pb-5">
+                                            <label>Volta do Almoco</label>
+                                            <InputMask
+                                                {...register('almoco_retorno')}
+                                                mask="99:99:99"
+                                                id="almoco_retorno"
+                                                name="almoco_retorno"
+                                                type="almoco_retorno"
+                                                required
+                                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                placeholder="Digite o horario que voce saiu"
+                                                defaultValue={timescale.almoco_retorno ? timescale.almoco_retorno: '' }
+                                            />
+                                        </div>
                                         <div>
-                                            <input
+                                            <label>Saida</label>
+                                            <InputMask
                                                 {...register('saida')}
                                                 mask="99:99:99"
                                                 id="escala"
@@ -140,14 +161,16 @@ export default function Timescale() {
                             ) : ''
                         }
 
-                        {(errors.nome || errors.escala) ? (
+                        {(errors?.entrada || errors?.almoco_saida || errors?.almoco_retorno || errors?.saida) ? (
                             <div role="alert">
                                 <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
                                     Danger
                                 </div>
                                 <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
-                                    <p>{errors.nome ? errors.nome : ''}</p>
-                                    <p>{errors.escala ? errors.escala : ''}</p>
+                                    <p>{errors?.entrada ? errors?.entrada : ''}</p>
+                                    <p>{errors?.almoco_saida ? errors?.almoco_saida : ''}</p>
+                                    <p>{errors?.almoco_retorno ? errors?.almoco_retorno : ''}</p>
+                                    <p>{errors?.saida ? errors.saida : ''}</p>
                                 </div>
                             </div>
                         ) : ''}
@@ -155,7 +178,7 @@ export default function Timescale() {
                     </div>
                 ) : (
                     <div className="px-4 py-6 sm:px-0">
-                        <TableTimeRecords onEdit={timescaleEdit}/>
+                        <TableTimeRecords onEdit={timeRecordEdit}/>
                     </div>
                 )}
             </main>
