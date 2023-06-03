@@ -92,7 +92,7 @@ class CollaboratorController extends Controller
 
             return response()->json($collaborators);
         } catch (\Exception $exception) {
-            return response()->json($exception);
+            return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
     }
 }
