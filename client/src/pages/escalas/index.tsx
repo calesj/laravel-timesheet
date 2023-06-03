@@ -3,9 +3,8 @@ import Header from "@/components/header";
 import {withAuthServerSideProps} from "@/components/getServerSideProps/getServerSideProps";
 import {useForm} from 'react-hook-form';
 import React, {useState} from "react";
-import {loading} from "@/components/loading/loading";
+import InputMask from 'react-input-mask';
 import {api} from "@/services/api";
-import TableTimescales from "@/components/tables/tableTimescales";
 import TableTimeRecords from "@/components/tables/tableTimeRecords";
 
 export default function Timescale() {
@@ -73,7 +72,7 @@ export default function Timescale() {
 
             <header className="bg-white shadow">
                 <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Escalas</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">Meus registros de ponto</h1>
                 </div>
             </header>
             <main>
@@ -84,33 +83,36 @@ export default function Timescale() {
                         <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
                             <div className="bg-white shadow-xl p-4 rounded-lg">
                                 <div className="px-4 sm:px-0 flex justify-end">
-                                    <h2 className="text-xl font-semibold mb-2 mr-96">Dados da Escala</h2>
+                                    <h1 className="text-xl font-semibold mb-2 mr-96">Dados da Escala</h1>
                                     <button onClick={closeCard} className="bg-red-400 hover:bg-red-500 text-white font-bold px-4 rounded">X</button>
                                 </div>
+                                <h2 className="text-xl font-semibold mb-2 mr-96">Referente ao dia {timescale.data}</h2>
                                 <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSaveTimescale)}>
                                     <div className="rounded-md shadow-sm -space-y-px">
                                         <div>
-                                            <input
-                                                {...register('nome')}
-                                                id="nome"
-                                                name="nome"
-                                                type="nome"
+                                            <InputMask
+                                                {...register('entrada')}
+                                                mask="99:99:99"
+                                                id="entrada"
+                                                name="entrada"
+                                                type="entrada"
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                                placeholder="Digite o nome da escala"
-                                                defaultValue={timescale.nome ? timescale.nome: '' }
+                                                placeholder="Digite o horario que voce entrou"
+                                                defaultValue={timescale.entrada ? timescale.entrada: '' }
                                             />
                                         </div>
                                         <div>
                                             <input
-                                                {...register('escala')}
+                                                {...register('saida')}
+                                                mask="99:99:99"
                                                 id="escala"
                                                 name="escala"
                                                 type="escala"
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                                placeholder="Digite a escala"
-                                                defaultValue={timescale.escala ? timescale.escala: '' }
+                                                placeholder="Digite o horario que voce saiu"
+                                                defaultValue={timescale.saida ? timescale.saida: '' }
                                             />
                                         </div>
                                     </div>
@@ -153,12 +155,7 @@ export default function Timescale() {
                     </div>
                 ) : (
                     <div className="px-4 py-6 sm:px-0">
-                        <div className="px-4 py-6 sm:px-0 flex justify-end">
-                            <button onClick={openCard} className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded">
-                                Adicionar Escala
-                            </button>
-                        </div>
-                        <TableTimeRecords onEdit={null}/>
+                        <TableTimeRecords onEdit={timescaleEdit}/>
                     </div>
                 )}
             </main>

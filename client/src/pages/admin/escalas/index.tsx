@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Header from "@/components/header";
-import {withAuthServerSideProps} from "@/components/getServerSideProps/getServerSideProps";
+import InputMask from 'react-input-mask';
 import {useForm} from 'react-hook-form';
 import React, {useState} from "react";
 import {api} from "@/services/api";
@@ -72,7 +72,7 @@ export default function Timescale() {
 
             <header className="bg-white shadow">
                 <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Escalas</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">Todas Escalas Cadastradas - ADMIN</h1>
                 </div>
             </header>
             <main>
@@ -97,19 +97,33 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o nome da escala"
-                                                defaultValue={timescale.nome ? timescale.nome: '' }
+                                                defaultValue={timescale.nome ? timescale.nome : ''}
                                             />
                                         </div>
                                         <div>
-                                            <input
-                                                {...register('escala')}
-                                                id="escala"
-                                                name="escala"
-                                                type="escala"
+                                            <InputMask
+                                                {...register('entrada')}
+                                                mask="99:99:99"
+                                                id="entrada"
+                                                name="entrada"
+                                                type="entrada"
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                                                placeholder="Digite a escala"
-                                                defaultValue={timescale.escala ? timescale.escala: '' }
+                                                placeholder="Digite o horario de entrada"
+                                                defaultValue={timescale.entrada ? timescale.entrada : ''}
+                                            />
+                                        </div>
+                                        <div>
+                                            <InputMask
+                                                {...register('saida')}
+                                                mask="99:99:99"
+                                                id="saida"
+                                                name="saida"
+                                                type="text"
+                                                required
+                                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                                                placeholder="Digite o horario de saida"
+                                                defaultValue={timescale.saida ? timescale.saida : ''}
                                             />
                                         </div>
                                     </div>
