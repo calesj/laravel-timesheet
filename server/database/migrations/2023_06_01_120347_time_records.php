@@ -26,7 +26,7 @@ return new class extends Migration
             $table->time('saldo_final')->default('00:00:00');
             $table->timestamps();
 
-            $table->foreign('collaborator_id')->references('id')->on('collaborators');
+            $table->foreign('collaborator_id')->references('id')->on('collaborators')->onDelete('cascade');
         });
     }
 
