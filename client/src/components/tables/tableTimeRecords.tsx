@@ -86,22 +86,22 @@ export default function TableTimeRecords({ onEdit }) {
                                 timeRecords.map((item) => (
                                     <tr key={item?.data}>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.data}
+                                            {item?.data}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.entrada}
+                                            {item?.entrada}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.almoco_saida}
+                                            {item?.almoco_saida}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.almoco_retorno}
+                                            {item?.almoco_retorno}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.saida}
+                                            {item?.saida}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.saldo_final}
+                                            {item?.saldo_final}
                                         </td>
                                         <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                             <button

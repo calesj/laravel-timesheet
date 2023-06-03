@@ -61,12 +61,12 @@ export default function TableTimescales({ onEdit }) {
                             <tbody className="divide-y divide-gray-200">
                             {timescales && timescales.length > 0 ? (
                                 timescales.map((item) => (
-                                    <tr key={item.id}>
+                                    <tr key={item?.id}>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.id}
+                                            {item?.id}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
-                                            {item.nome}
+                                            {item?.nome}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                             {item.entrada ? item.entrada + ' as ' + item.saida : ''}
