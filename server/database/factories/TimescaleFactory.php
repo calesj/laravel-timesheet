@@ -19,7 +19,8 @@ class TimescaleFactory extends Factory
     {
         return [
             'nome' => fake()->name(),
-            'escala' => fake()->unique()->dateTime(),
+            'entrada' => fake()->unique()->time(),
+            'saida' => fake()->unique()->time(),
         ];
     }
 }
