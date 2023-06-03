@@ -115,6 +115,12 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * METODO RESPONSAVEL POR ATUALIZAR DADOS DE UM COLABORADOR, LEMBRANDO QUE UM COLABORADOR E UM USUARIO
+     * @param Request $request
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse|true
+     */
     public function updateCollaborator(Request $request, int $userId)
     {
         $rules = [
@@ -154,5 +160,43 @@ class AuthController extends Controller
         } catch (Exception $e) {
             return response()->json(['message' => 'Desculpe, algo deu errado']);
         }
+    }
+
+    /**
+     * METODO RESPONSAVEL POR DELETAR USUARIOS
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function destroy($id)
+    {
+        if(!Auth::check()) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
+        $user = $this->authAdmCheck();
+
+        if ($user['userPrivilege']['id'] !== 2) {
+            return response()->json(['Unauthorized'], 401);
+        }
+
+        $userFind = User::find($id);
+        if (!$userFind) {
+            return response()->json('Recurso nao encontrado', 204);
+        }
+
+        try {
+            $userFind->delete();
+            return response()->json(['message' => 'Item deletado com sucesso']);
+        } catch (\Exception $e) {
+            return response()->json($e);
+        }
+    }
+
+    /**
+     * VERIFICA SE O USUARIO AUTENTICADO, TEM PRIVILEGIOS ADMINISTRATIVOS
+     * @return mixed
+     */
+    private function authAdmCheck(){
+        return Auth::user()->load('userPrivilege');
     }
 }
