@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
-
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Collaborator>
  */
@@ -18,10 +17,12 @@ class CollaboratorFactory extends Factory
     public function definition(): array
     {
         return [
-            'nome' => fake()->name(),
-            "matricula" => fake()->numerify('#####'),
-            "cpf" => "Cales Junes",
-            "timescale_id" => "1",
+            'matricula' => fake()->numerify('#####'),
+            'cpf' => fake()->numerify('###########'),
+            'timescale_id' => fake()->numberBetween(1,3),
+            'user_id' => function () {
+                return User::factory()->create()->id;
+            },
         ];
     }
 }
