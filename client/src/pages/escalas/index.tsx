@@ -127,9 +127,9 @@ export default function Timescale() {
                                             <InputMask
                                                 {...register('saida')}
                                                 mask="99:99:99"
-                                                id="escala"
-                                                name="escala"
-                                                type="escala"
+                                                id="saida"
+                                                name="saida"
+                                                type="saida"
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o horario que voce saiu"
