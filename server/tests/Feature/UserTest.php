@@ -61,8 +61,38 @@ class UserTest extends TestCase
     public function test_user_auth()
     {
         $response = $this->getJson('/api/user');
-
         $response->assertStatus(401);
+    }
+
+    /**
+     * TENTA ACESSAR UMA ROTA DE ADMISTRADOR SEM ESTAR AUTENTICADO
+     * @return void
+     */
+    public function test_user_auth_admin()
+    {
+        $response = $this->getJson('api/admin');
+        $response->assertStatus(401);
+    }
+
+    /**
+     * TENTA ACESSAR UMA ROTA DE ADMINISTRADOR ESTANDO AUTENTICADO, MAS SEM PRIVILEGIOS DE ADMIN
+     * @return void
+     */
+    public function test_user_admin()
+    {
+        $response = $this->authenticateUserNoAdmin()->getJson('api/admin');
+        $response->assertStatus(403);
+        $response->assertJson(['message' => "acesso negado"]);
+    }
+
+    /**
+     * TENTA ACESSAR UMA ROTA DE ADMINISTRADOR ESTANDO AUTENTICADO, E COM PRIVILEGIOS DE ADMINISTRADOR
+     * @return void
+     */
+    public function test_user_admin_check()
+    {
+        $response = $this->authenticateUser()->getJson('api/admin');
+        $response->assertStatus(200);
     }
 
     /**
