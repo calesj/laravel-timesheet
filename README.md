@@ -14,6 +14,18 @@ Somente usuarios com privilegios administrativos, podem ter acesso as rotas que 
 * Editar uma escala
 * Excluir uma escala
 
+dois usuarios já vem registrados automaticamente, afins de teste
+
+<b>Usuario admin:</b> <br>
+email: `admin@admin.com`
+
+senha: `admin`
+
+<b> Usuario nao admin: </b> <br>
+email: `teste@teste.com`
+
+senha: `12345678`
+
 
 ## DEMO
 [https://m2-client-production.up.railway.app/](https://m2-client-production.up.railway.app/)
@@ -52,6 +64,10 @@ Somente usuarios com privilegios administrativos, podem ter acesso as rotas que 
 * `src\services\axios.tsx` linha 5
 
 9 - Acesse a rota `http://localhost:3000`
+
+## Arquitetura do banco
+![arquitetura-banco](https://github.com/calesj/teste-m2/assets/86434489/ada18a3f-a7c5-478a-8eb5-d6434b7c86c5)
+
 
 # Rotas da API
 ## USUARIO
