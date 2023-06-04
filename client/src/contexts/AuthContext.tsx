@@ -71,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const signIn = async (data: FieldValues): Promise<void> => {
         const { email, password } = data;
         const response = await axios.post(
-            "https://m2-server-production.up.railway.app/api/login",
+            "http://127.0.0.1:8000/api/login",
             {
                 email,
                 password,
