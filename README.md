@@ -1,5 +1,20 @@
 # Sistema de Registro de Ponto
 
+Trata-se de um sistema de registro de ponto que oferece aos usuários a opção de registrar a entrada, o horário de almoço, o retorno do almoço e a saída. Além disso, os usuários têm acesso aos registros de ponto de datas anteriores na aba "Minha Escala". Nessa aba, eles também têm a capacidade de editar registros de pontos específicos, caso tenham feito um registro incorreto.
+
+O sistema inclui autenticação por meio de tokens, utilizando o Laravel Sanctum para esse fim. Além disso, conta com um middleware que verifica se o usuário possui privilégios administrativos.
+
+Somente usuarios com privilegios administrativos, podem ter acesso as rotas que envolvam:
+* Listar todos os colaboradores
+* Listar todas as escalas
+* Registrar um úsuario / colaborador
+* Editar um úsuario / colaborador
+* Excluir um úsuario / colaborador
+* Registrar uma escala
+* Editar uma escala
+* Excluir uma escala
+
+
 ## DEMO
 [https://m2-client-production.up.railway.app/](https://m2-client-production.up.railway.app/)
 
@@ -38,4 +53,70 @@
 
 9 - Acesse a rota `http://localhost:3000`
 
-## Observações
+## Rotas da API
+### USUARIO
+- Fazer login (POST)
+`http://127.0.0.1:8000/api/login`
+
+- Registrar um usuario (Requer autenticação, e privilégios administrativos) (POST)
+`http://127.0.0.1:8000/api/register`
+ 
+- Retorna as informações do usuario autenticado no momento (Requer autenticação) (GET)
+`http://127.0.0.1:8000/api/user`
+
+- Retorna todos os registros de ponto do colaborador logado (Requer autenticação) (GET)
+`http://127.0.0.1:8000/time_record/{CollaborateId}`
+
+- Bate o ponto de entrada do úsuario logado (Requer autenticação) (PUT)
+`http://127.0.0.1:8000/time_record/entry/{CollaborateId}`
+
+- Bate o ponto de almoço do úsuario logado (Requer autenticação) (PUT)
+`http://127.0.0.1:8000/time_record/lunch/{CollaborateId}`
+
+- Bate o ponto de retorno do almoço do úsuario logado (Requer autenticação) (PUT)
+`http://127.0.0.1:8000/time_record/return_lunch/{CollaborateId}`
+
+- Bate o ponto de saída do úsuario logado (Requer autenticação) (PUT)
+`http://127.0.0.1:8000/time_record/return_lunch/{CollaborateId}`
+
+- Responsavel por alterar registros de uma data especifica do úsuario autenticado caso usuario tenha batido ponto errado (Requer autenticação) (PUT)
+`http://127.0.0.1:8000/time_record/update/{CollaborateId}`
+
+- Retorna as informações do usuario, e verifica se ele tem privilegios administrativos (Requer autenticação, e privilégios de administrador) (GET)
+`http://127.0.0.1:8000/api/login`
+
+### ESCALAS (Requer autenticação, e privilégios administrativos)
+- Retorna todas as escalas cadastradas no banco (GET)
+`http://127.0.0.1:8000/timescale/`
+
+- Retorna a escala através do id passado pela url (GET)
+`http://127.0.0.1:8000/timescale/{id}`
+
+- Registra uma escala (POST)
+`http://127.0.0.1:8000/timescale/`
+
+- Atualiza uma escala existente (PUT)
+`http://127.0.0.1:8000/timescale/{id}`
+
+- Exclui uma escala existente (DELETE)
+`http://127.0.0.1:8000/timescale/{id}`
+
+## COLABORADOR (Requer autenticação, e privilégios administrativos)
+- Retorna todos os colaboradores registrados (GET)
+`http://127.0.0.1:8000/collaborator/`
+
+- Retorna todos os colaboradores encontrados através de uma busca (GET)
+`http://127.0.0.1:8000/collaborator/search/{search}`
+
+- Retorna o colaborador através de seu ID (GET)
+`http://127.0.0.1:8000/collaborator/{id}`
+
+- Reponsavel por alterar os dados de um colaborador (PUT)
+`http://127.0.0.1:8000/update/{collaboratorId}`
+
+- Reponsavel por deletar um usuario/Colaborador (PUT)
+`http://127.0.0.1:8000/delete/{userId}`
+ 
+
+
+
