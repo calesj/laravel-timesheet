@@ -23,7 +23,7 @@ export const adminVerify = (redirectPath = '/'): GetServerSideProps => {
         let response: AxiosResponse<AdminData>;
         axios.defaults.headers['Authorization'] = `Bearer ${cookies.m2_token}`
         try {
-            response = await axios.get('https://m2-server-production.up.railway.app/api/admin/');
+            response = await axios.get('http://127.0.0.1:8000/api/admin/');
         } catch (error) {
             return {
                 redirect: {
