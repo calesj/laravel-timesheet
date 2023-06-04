@@ -1,43 +1,68 @@
 import Head from 'next/head'
 import Header from "@/components/header";
 import {withAuthServerSideProps} from "@/components/getServerSideProps/getServerSideProps";
-import {useForm} from 'react-hook-form';
+import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 import React, {useState} from "react";
 import InputMask from 'react-input-mask';
 import {api} from "@/services/api";
 import TableTimeRecords from "@/components/tables/tableTimeRecords";
 
-export default function Timescale() {
+export default function Timerecords() {
     const { register, handleSubmit, reset } = useForm();
     const [card, setCard] = useState(false)
-    const [errors, setErrors] = useState([])
+    const [errors, setErrors] = useState<FormErrors>({})
     const [success, setSuccess] = useState(false)
-    const [timescale, setTimescale] = useState('')
+    const [timerecords, setTimerecords] = useState<{
+        almoco_retorno: string
+        almoco_saida: string
+        collaborator_id: string
+        created_at: string
+        data: string
+        entrada: string
+        id: string | number
+        ponto_almoco_registrado : boolean
+        ponto_entrada_registrado: boolean
+        ponto_retorno_almoco_registrado: boolean
+        ponto_saida_registrado: boolean
+        saida: string
+        saldo_final: string
+    } | null>(null);
 
+    // INTERFACE DOS POSSIVEIS ERROS
+    interface FormErrors {
+        entrada?: string
+        almoco_saida?: string
+        almoco_retorno?: string
+        saida?: string
+    }
+
+    // METODO RESPONSAVEL POR ABRIR O CARD DE EDICAO
     async function openCard() {
         setSuccess(false)
-        setErrors([])
+        setErrors({})
         setCard(true)
         reset()
     }
 
+    // METODO RESPONSAVEL POR FECHAR O CARD DE EDICAO
     async function closeCard() {
-        setTimescale('')
+        setTimerecords(null)
         setSuccess(false)
-        setErrors([])
+        setErrors({})
         setCard(false)
         reset()
     }
 
-    // METODO RESPONSAVEL POR CADASTRAR A ESCALA NO BANCO
-    async function handleSaveTimescale(data) {
-        data.data = timescale.data
-        const response = await api.put(`time_record/update/${timescale?.collaborator_id}`, data)
+    // METODO RESPONSAVEL POR ATUALIZAR UM REGISTRO DE PONTO NO BANCO
+    const handleSaveTimerecords: SubmitHandler<FieldValues> = async (data) => {
+        // ADICIONANDO A PROPRIEDADE DATA, COM O VALOR DA DATA DO REGISTRO QUE O USUARIO ESCOLHEU PRA EDITAR
+        data.data = timerecords?.data
+        const response = await api.put(`time_record/update/${timerecords?.collaborator_id}`, data)
                 .then(response => {
                     if (response.data.id) {
-                        setErrors([])
+                        setErrors({})
                         setSuccess(true)
-                        setTimescale(response.data)
+                        setTimerecords(response.data)
                     }
                 }).catch(e => {
                     setErrors(e.response.data.errors)
@@ -46,14 +71,28 @@ export default function Timescale() {
         reset()
     }
 
-    const timeRecordEdit = (item) => {
-        setTimescale(item)
+    const timeRecordEdit = (item: {
+        almoco_retorno: string
+        almoco_saida: string
+        collaborator_id: string
+        created_at: string
+        data: string
+        entrada: string
+        id: string | number
+        ponto_almoco_registrado : boolean
+        ponto_entrada_registrado: boolean
+        ponto_retorno_almoco_registrado: boolean
+        ponto_saida_registrado: boolean
+        saida: string
+        saldo_final: string
+    }) => {
+        setTimerecords(item)
         openCard()
     }
     return (
         <div>
             <Head>
-                <title>Escalas</title>
+                <title>Registros de ponto</title>
             </Head>
 
             {
@@ -77,8 +116,8 @@ export default function Timescale() {
                                     <h1 className="text-xl font-semibold mb-2 mr-96">Dados da Escala</h1>
                                     <button onClick={closeCard} className="bg-red-400 hover:bg-red-500 text-white font-bold px-4 rounded">X</button>
                                 </div>
-                                <h2 className="text-xl font-semibold mb-2 mr-96">Referente ao dia {timescale.data}</h2>
-                                <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSaveTimescale)}>
+                                <h2 className="text-xl font-semibold mb-2 mr-96">Referente ao dia {timerecords?.data}</h2>
+                                <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSaveTimerecords)}>
                                     <div className="rounded-md shadow-sm -space-y-px">
                                         <div className="pb-5">
                                             <label>Entrada</label>
@@ -91,7 +130,7 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o horario que voce entrou"
-                                                defaultValue={timescale.entrada ? timescale.entrada: '' }
+                                                defaultValue={timerecords?.entrada ? timerecords.entrada: '' }
                                             />
                                         </div>
                                         <div className="pb-5">
@@ -105,7 +144,7 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o horario que voce saiu"
-                                                defaultValue={timescale.almoco_saida ? timescale.almoco_saida: '' }
+                                                defaultValue={timerecords?.almoco_saida ? timerecords.almoco_saida: '' }
                                             />
                                         </div>
                                         <div className="pb-5">
@@ -119,7 +158,7 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o horario que voce saiu"
-                                                defaultValue={timescale.almoco_retorno ? timescale.almoco_retorno: '' }
+                                                defaultValue={timerecords?.almoco_retorno ? timerecords.almoco_retorno: '' }
                                             />
                                         </div>
                                         <div>
@@ -133,7 +172,7 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o horario que voce saiu"
-                                                defaultValue={timescale.saida ? timescale.saida: '' }
+                                                defaultValue={timerecords?.saida ? timerecords.saida: '' }
                                             />
                                         </div>
                                     </div>
@@ -144,7 +183,7 @@ export default function Timescale() {
                                         >
                                     <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                     </span>
-                                            { timescale.id ? <p>Editar cadastro da Escala</p> : <p>Cadastrar Escala</p>}
+                                            { timerecords?.id ? <p>Editar cadastro da Escala</p> : <p>Cadastrar Escala</p>}
                                         </button>
                                     </div>
                                 </form>
@@ -155,7 +194,7 @@ export default function Timescale() {
                             success ? (
                                 <div role="alert">
                                     <div className="bg-green-500 text-white font-bold rounded-t px-4 py-4">
-                                        { timescale.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
+                                        { timerecords?.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
                                     </div>
                                 </div>
                             ) : ''

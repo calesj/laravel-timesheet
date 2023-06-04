@@ -20,7 +20,8 @@ class TimeRecordController extends Controller
         'entrada' => 'required',
         'almoco_saida' => 'required',
         'almoco_retorno' => 'required',
-        'saida' => 'required'
+        'saida' => 'required',
+        'data' => 'required'
     ];
     /**
      * METODO RESPONSAVEL POR RETORNAR TODOS OS PONTOS BATIDOS
@@ -303,9 +304,13 @@ class TimeRecordController extends Controller
         try {
             $timeRecords = TimeRecord::where('data', $request['data'])->where('collaborator_id', $collaboratorId)->first();
             $timeRecords->entrada = $request->entrada;
+            $timeRecords->ponto_entrada_registrado = true;
             $timeRecords->almoco_saida = $request->almoco_saida;
+            $timeRecords->ponto_almoco_registrado = true;
             $timeRecords->almoco_retorno = $request->almoco_retorno;
+            $timeRecords->ponto_retorno_almoco_registrado = true;
             $timeRecords->saida = $request->saida;
+            $timeRecords->ponto_saida_registrado = true;
             $timeRecords->saldo_final = 0;
             // SALDO DE HORAS DA ENTRADA, ATE A HORA DO ALMOCO
             $timeRecords->saldo_final = $this->calcHours(($this->calcHours($timeRecords->entrada, $timeRecords->almoco_saida)),$timeRecords->saldo_final);

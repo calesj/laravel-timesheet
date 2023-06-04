@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {api} from "@/services/api";
-export default function TableTimescales({ onEdit }) {
+
+interface TableTimescalesProps {
+    onEdit: (item: { id: number | string; nome: string; entrada: string; saida: string }) => void
+}
+export default function TableTimescales({ onEdit }: TableTimescalesProps) {
     const [timescales, setTimescales] = useState([]);
 
     useEffect(() => {
@@ -12,7 +16,7 @@ export default function TableTimescales({ onEdit }) {
         setTimescales(response.data);
     };
 
-    const timescaleDelete = async (id) => {
+    const timescaleDelete = async (id: number | string) => {
         const response = await api.delete(`/timescale/${id}`);
         console.log(response)
         fetchData();
@@ -60,7 +64,12 @@ export default function TableTimescales({ onEdit }) {
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                             {timescales && timescales.length > 0 ? (
-                                timescales.map((item) => (
+                                timescales.map((item:{
+                                    id: number | string
+                                    nome: string
+                                    entrada: string
+                                    saida: string
+                                }) => (
                                     <tr key={item?.id}>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                             {item?.id}

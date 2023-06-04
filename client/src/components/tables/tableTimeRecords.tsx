@@ -1,7 +1,26 @@
 import React, {useContext, useEffect, useState} from "react";
 import {AuthContext} from "@/contexts/AuthContext";
 import {api} from "@/services/api";
-export default function TableTimeRecords({ onEdit }) {
+
+interface TableTimeRecordsProps {
+    onEdit: (item: {
+        almoco_retorno: string
+        almoco_saida: string
+        collaborator_id: string
+        created_at: string
+        data: string
+        entrada: string
+        id: string | number
+        ponto_almoco_registrado : boolean
+        ponto_entrada_registrado: boolean
+        ponto_retorno_almoco_registrado: boolean
+        ponto_saida_registrado: boolean
+        saida: string
+        saldo_final: string
+    }) => void;
+}
+
+export default function TableTimeRecords({onEdit}: TableTimeRecordsProps) {
     const [timeRecords, setTimeRecords] = useState([]);
     const {user, getUser} = useContext(AuthContext)
 
@@ -12,12 +31,11 @@ export default function TableTimeRecords({ onEdit }) {
     }, [user]);
 
     const fetchData = async () => {
-        if (user?.collaborator?.id) {
-            const response = await api.get(`time_record/${user?.collaborator?.id}`);
+        if (user && user.collaborator && user.collaborator.id != null) {
+            const response = await api.get(`time_record/${user.collaborator.id}`);
             setTimeRecords(response.data);
         }
-    };
-
+    }
     return (
         <div className="flex flex-col">
             <div className="overflow-x-auto">
@@ -72,8 +90,22 @@ export default function TableTimeRecords({ onEdit }) {
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                             {timeRecords && timeRecords.length > 0 ? (
-                                timeRecords.map((item) => (
-                                    <tr key={item?.data}>
+                                timeRecords.map((item: {
+                                    almoco_retorno: string
+                                    almoco_saida: string
+                                    collaborator_id: string
+                                    created_at: string
+                                    data: string
+                                    entrada: string
+                                    id: string | number
+                                    ponto_almoco_registrado : boolean
+                                    ponto_entrada_registrado: boolean
+                                    ponto_retorno_almoco_registrado: boolean
+                                    ponto_saida_registrado: boolean
+                                    saida: string
+                                    saldo_final: string
+                                }) => (
+                                    <tr key= {item?.data ?? ''}>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                             {item?.data}
                                         </td>

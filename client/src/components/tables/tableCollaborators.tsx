@@ -1,27 +1,48 @@
-import React, {useEffect, useState} from "react";
+import React, {useCallback, useEffect, useState} from "react";
 import {api} from "@/services/api";
 import { FaSearch } from 'react-icons/fa';
 import {useForm} from "react-hook-form";
 import {IoMdRefresh} from "react-icons/io";
 
-export default function TableCollaborators({ onEdit }) {
+interface TableCollaboratorsProps {
+    onEdit: (item: {
+        id: string | number;
+        matricula: string;
+        cpf: string;
+        user_id: string | number;
+        timescale_id: string | number;
+        user: {
+            id: string | number;
+            name: string;
+            email: string;
+        };
+        timescale: {
+            id: string | number;
+            entrada: string;
+            saida: string;
+        };
+    }) => void;
+}
+
+export const TableCollaborators: React.FC<TableCollaboratorsProps> = ({ onEdit }) => {
     const [collaborators, setCollaborators] = useState([]);
     const {register, handleSubmit, reset } = useForm();
 
-    useEffect(() => {
-        fetchData();
-    }, []);
-
     // METODO RESPONSAVEL, POR CARREGAR OS DADOS DE TODOS OS USUARIOS
-    const fetchData = async () => {
-        reset()
+    const fetchData = useCallback(async () => {
+        reset();
         const response = await api.get("collaborator");
         setCollaborators(response.data);
-    }
+    }, [reset]);
+
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+    
 
     // METODO RESPONSAVEL POR FAZER BUSCA NA API
-    const search = async (busca = null) => {
-        if(busca?.busca != '') {
+    const search = async (busca: { busca?: string } | null = null) => {
+        if (busca?.busca != '') {
             const response = await api.get(`collaborator/search/${busca?.busca}`);
             console.log(response)
             setCollaborators(response.data);
@@ -32,8 +53,16 @@ export default function TableCollaborators({ onEdit }) {
     }
 
     // METODO RESPONSAVEL POR DELETAR UM USUARIO
-    const collaboratorDelete = async (id) => {
-        const response = await api.delete(`/delete/${id}`);
+    const collaboratorDelete = async (item: {
+        id: string | number;
+        matricula: string;
+        cpf: string;
+        user_id: string | number;
+        timescale_id: string | number;
+        user: { id: string | number; name: string; email: string };
+        timescale: { id: string | number; entrada: string; saida: string }
+    }) => {
+        const response = await api.delete(`/delete/${item.user.id}`);
         fetchData();
     };
 
@@ -104,7 +133,23 @@ export default function TableCollaborators({ onEdit }) {
                             </thead>
                             <tbody className="divide-y divide-gray-200">
                             {collaborators && collaborators.length > 0 ? (
-                                collaborators.map((item) => (
+                                collaborators.map((item: {
+                                    id: string | number;
+                                    matricula: string;
+                                    cpf: string;
+                                    user_id: string | number;
+                                    timescale_id: string | number;
+                                    user: {
+                                        id: string | number;
+                                        name: string;
+                                        email: string;
+                                    };
+                                    timescale: {
+                                        id: string | number;
+                                        entrada: string;
+                                        saida: string;
+                                    };
+                                }) => (
                                     <tr key={item?.id}>
                                         <td className="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                             {item?.id}
@@ -129,7 +174,7 @@ export default function TableCollaborators({ onEdit }) {
                                         <td className="px-6 py-4 text-sm font-medium text-right whitespace-nowrap">
                                             <button
                                                 className="text-red-300 hover:text-red-700"
-                                                onClick={() => collaboratorDelete(item?.user_id)}
+                                                onClick={() => collaboratorDelete(item)}
                                             >
                                                 Excluir
                                             </button>

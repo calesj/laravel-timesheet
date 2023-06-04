@@ -1,13 +1,17 @@
 import Head from 'next/head'
 import {LockClosedIcon} from "@heroicons/react/outline";
-import {useForm} from 'react-hook-form';
+import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 import React, {useContext, useEffect, useState} from "react";
 import {AuthContext} from "@/contexts/AuthContext";
 
 export default function Home() {
-  const { register, handleSubmit } = useForm();
+  const [errors, setErrors] = useState<FormErrors>({})
+  const {register, handleSubmit } = useForm();
   const {signIn, getUser} = useContext(AuthContext)
-  const [errors, setErrors] = useState([])
+
+  interface FormErrors {
+    login?: string
+  }
 
   // VERIFICA SE EXISTE UM TOKEN SALVO NO NAVEGADOR,
   // SE EXISTIR, ELE VAI FAZER A REQUISICAO NA API COM ESSE TOKEN,
@@ -17,11 +21,11 @@ export default function Home() {
   }, []);
 
   // METODO RESPONSAVEL POR ENVIAR OS PARAMETROS DO FORMULARIO, AO METODO DE LOGAR DO CONTEXT
-  async function handleSignIn(data) {
+  const handleSignIn: SubmitHandler<FieldValues> = async (data) => {
     const response = await signIn(data)
-    if (response.data.errors) {
-      setErrors(response.data.errors)
-    }
+        .catch(e => {
+          setErrors(e.response.data.errors)
+        })
   }
 
   return (
@@ -66,15 +70,6 @@ export default function Home() {
               />
             </div>
           </div>
-
-          <div className="flex items-center justify-between">
-            <div className="text-sm">
-              <a href="/register" className="font-medium text-indigo-600 hover:text-indigo-500">
-                Não tem uma conta? <b>Registre-se</b>
-              </a>
-            </div>
-          </div>
-
           <div>
             <button
               type="submit"
@@ -86,7 +81,7 @@ export default function Home() {
               Entrar
             </button>
           </div>
-          {(errors.login) ? (
+          {errors.login && (
               <div role="alert">
                 <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
                   Danger
@@ -95,7 +90,7 @@ export default function Home() {
                   <p>{errors.login}</p>
                 </div>
               </div>
-          ) : ''}
+          )}
         </form>
       </div>
     </div>

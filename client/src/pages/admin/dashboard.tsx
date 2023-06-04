@@ -1,7 +1,7 @@
 import Head from 'next/head'
-import TableCollaborators from "@/components/tables/tableCollaborators";
+import {TableCollaborators} from "@/components/tables/tableCollaborators"
 import Header from "@/components/header";
-import {useForm} from 'react-hook-form';
+import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 import React, {useState} from "react";
 import {api} from "@/services/api";
 import {adminVerify} from "@/components/getServerSideProps/adminVerify";
@@ -10,44 +10,64 @@ export default function Dashboard() {
 
     const {register, handleSubmit, reset } = useForm();
     const [card, setCard] = useState(false)
-    const [collaborator, setCollaborator] = useState('')
-    const [errors, setErrors] = useState([])
+    const [errors, setErrors] = useState<FormErrors>({})
     const [success, setSuccess] = useState(false)
     const [timescale, setTimescale] = useState([])
+    const [collaborator, setCollaborator] = useState<{
+        id: string | number
+        matricula: string
+        cpf: string
+        user_id: string | number
+        timescale_id: string | number
+        user: {
+            id: string | number
+            name: string
+            email: string
+        }
+    } | null>(null);
+
+    interface FormErrors {
+        name?: string
+        matricula?: string
+        cpf?: string
+        email?: string
+        password?: string
+    }
+
     async function openCard() {
         const response = await api.get('timescale')
         setTimescale(response.data)
         setSuccess(false)
-        setErrors([])
+        setErrors({})
         setCard(true)
         reset()
     }
 
     async function closeCard() {
-        setCollaborator('')
+        setCollaborator(null)
         setTimescale([])
         setSuccess(false)
-        setErrors([])
+        setErrors({})
         setCard(false)
         reset()
     }
 
     // METODO RESPONSAVEL POR CADASTRAR OU EDITAR O COLABORADOR NO BANCO
-    async function handleSaveCollaborator(data) {
-        const response = !collaborator.id ? await api.post('register', data)
-            .then(response => {
-                if (response.data.id) {
-                    setCollaborator('')
-                    setErrors([])
-                    setSuccess(true)
-                }
-            }).catch(e => {
-                setErrors(e.response.data.errors)
-            }) :
+    const handleSaveCollaborator: SubmitHandler<FieldValues> = async (data) => {
+        const response = !collaborator?.id ? await api.post('register', data)
+                .then(response => {
+                    if (response.data.id) {
+                        setCollaborator(null)
+                        setErrors({})
+                        setSuccess(true)
+                    }
+                }).catch(e => {
+                    setErrors(e.response.data.errors)
+                }) :
             (await api.put(`update/${collaborator?.user?.id}`, data)
                 .then(response => {
                     if (response.data.id) {
-                        setErrors([])
+                        setErrors({})
                         setSuccess(true)
                         setCollaborator(response.data)
                     }
@@ -58,10 +78,23 @@ export default function Dashboard() {
         reset()
     }
 
-    const collaboratorEdit = (item) => {
-        setCollaborator(item)
-        openCard()
-    }
+    // SETA AS PROPRIEDADES DE EDICAO DE UM COLABORADOR, VINDO DO COMPONENTE `tableCollaborators`
+    const collaboratorEdit = (item: {
+        id: string | number;
+        matricula: string;
+        cpf: string;
+        user_id: string | number;
+        timescale_id: string | number;
+        user: {
+            id: string | number;
+            name: string;
+            email: string;
+        }
+    }) => {
+        setCollaborator(item);
+        openCard();
+    };
+
     return (
         <div>
             <Head>
@@ -88,7 +121,9 @@ export default function Dashboard() {
                                 <button onClick={closeCard} className="bg-red-400 hover:bg-red-500 text-white font-bold px-4 rounded">X</button>
                             </div>
                             <form className="mt-8 space-y-6" onSubmit={handleSubmit(handleSaveCollaborator)}>
-                                <div className="rounded-md shadow-sm -space-y-px">
+
+
+                            <div className="rounded-md shadow-sm -space-y-px">
                                     <div>
                                         <input
                                             {...register('name')}
@@ -98,7 +133,7 @@ export default function Dashboard() {
                                             required
                                             className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                             placeholder="Nome do colaborador"
-                                            defaultValue={collaborator.user?.name ? collaborator?.user?.name: '' }
+                                            defaultValue={collaborator?.user?.name ? collaborator?.user?.name: '' }
                                         />
                                     </div>
                                     <div>
@@ -110,7 +145,7 @@ export default function Dashboard() {
                                             required
                                             className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                             placeholder="Matricula do colaborador"
-                                            defaultValue={collaborator.matricula ? collaborator.matricula: '' }
+                                            defaultValue={collaborator?.matricula ? collaborator.matricula: '' }
                                         />
                                     </div>
                                     <div>
@@ -122,7 +157,7 @@ export default function Dashboard() {
                                             required
                                             className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                             placeholder="CPF do colaborador"
-                                            defaultValue={collaborator.cpf ? collaborator.cpf: '' }
+                                            defaultValue={collaborator?.cpf ? collaborator.cpf: '' }
                                         />
                                     </div>
                                     <div>
@@ -138,7 +173,7 @@ export default function Dashboard() {
                                         />
                                     </div>
                                     {
-                                        !collaborator.id ?
+                                        !collaborator?.id ?
                                     (<div>
                                         <input
                                             {...register('password')}
@@ -160,11 +195,17 @@ export default function Dashboard() {
                                             className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                             placeholder="Escolha a escala"
                                         >
-                                            {timescale && timescale.map(item => (
+                                            {timescale && timescale.length > 0 ? (
+                                                timescale.map((item: {
+                                                id: string | number
+                                                nome: string
+                                                entrada: string
+                                                saida: string
+                                            }) => (
                                                 <option key={item.id} value={item.id} selected={item.id === collaborator?.timescale_id}>
                                                     {item.nome} - {item.entrada} as {item.saida}
                                                 </option>
-                                            ))}
+                                            ))): ''}
                                         </select>
                                     </div>
                                 </div>
@@ -175,7 +216,7 @@ export default function Dashboard() {
                                     >
                                     <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                     </span>
-                                        { collaborator.id ? <p>Editar Registro</p> : <p>Cadastrar Registro</p>}
+                                        { collaborator?.id ? <p>Editar Registro</p> : <p>Cadastrar Registro</p>}
                                     </button>
                                 </div>
                             </form>
@@ -186,7 +227,7 @@ export default function Dashboard() {
                             success ? (
                                 <div role="alert">
                                     <div className="bg-green-500 text-white font-bold rounded-t px-4 py-4">
-                                        { collaborator.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
+                                        { collaborator?.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
                                     </div>
                                 </div>
                             ) : ''

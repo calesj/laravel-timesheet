@@ -1,7 +1,7 @@
 import Head from 'next/head'
 import Header from "@/components/header";
 import InputMask from 'react-input-mask';
-import {useForm} from 'react-hook-form';
+import {FieldValues, SubmitHandler, useForm} from 'react-hook-form';
 import React, {useState} from "react";
 import {api} from "@/services/api";
 import TableTimescales from "@/components/tables/tableTimescales";
@@ -10,32 +10,43 @@ import {adminVerify} from "@/components/getServerSideProps/adminVerify";
 export default function Timescale() {
     const { register, handleSubmit, reset } = useForm();
     const [card, setCard] = useState(false)
-    const [errors, setErrors] = useState([])
+    const [errors, setErrors] = useState<FormErrors>({})
     const [success, setSuccess] = useState(false)
-    const [timescale, setTimescale] = useState('')
+    const [timescale, setTimescale] = useState<{
+        id: string | number
+        nome: string
+        entrada: string
+        saida: string
+    } | null>(null);
+
+    interface FormErrors {
+        nome?: string
+        entrada?: string
+        saida?: string
+    }
 
     async function openCard() {
         setSuccess(false)
-        setErrors([])
+        setErrors({})
         setCard(true)
         reset()
     }
 
     async function closeCard() {
-        setTimescale('')
+        setTimescale(null)
         setSuccess(false)
-        setErrors([])
+        setErrors({})
         setCard(false)
         reset()
     }
 
     // METODO RESPONSAVEL POR CADASTRAR A ESCALA NO BANCO
-    async function handleSaveTimescale(data) {
-        const response = !timescale.id ? await api.post('timescale', data)
+    const handleSaveTimescale: SubmitHandler<FieldValues> = async (data) => {
+        const response = !timescale?.id ? await api.post('timescale', data)
                 .then(response => {
                     if (response.data.id) {
-                        setTimescale('')
-                        setErrors([])
+                        setTimescale(null)
+                        setErrors({})
                         setSuccess(true)
                     }
                 }).catch(e => {
@@ -44,7 +55,7 @@ export default function Timescale() {
             (await api.put(`timescale/${timescale.id}`, data)
                 .then(response => {
                     if (response.data.id) {
-                        setErrors([])
+                        setErrors({})
                         setSuccess(true)
                         setTimescale(response.data)
                     }
@@ -54,8 +65,12 @@ export default function Timescale() {
 
         reset()
     }
-
-    const timescaleEdit = (item) => {
+    const timescaleEdit = (item: {
+        id: number | string
+        nome: string
+        entrada: string
+        saida: string
+    }) => {
         setTimescale(item)
         openCard()
     }
@@ -97,7 +112,7 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o nome da escala"
-                                                defaultValue={timescale.nome ? timescale.nome : ''}
+                                                defaultValue={timescale?.nome ? timescale.nome : ''}
                                             />
                                         </div>
                                         <div>
@@ -110,7 +125,7 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o horario de entrada"
-                                                defaultValue={timescale.entrada ? timescale.entrada : ''}
+                                                defaultValue={timescale?.entrada ? timescale.entrada : ''}
                                             />
                                         </div>
                                         <div>
@@ -123,7 +138,7 @@ export default function Timescale() {
                                                 required
                                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                                                 placeholder="Digite o horario de saida"
-                                                defaultValue={timescale.saida ? timescale.saida : ''}
+                                                defaultValue={timescale?.saida ? timescale.saida : ''}
                                             />
                                         </div>
                                     </div>
@@ -134,7 +149,7 @@ export default function Timescale() {
                                         >
                                     <span className="absolute left-0 inset-y-0 flex items-center pl-3">
                                     </span>
-                                            { timescale.id ? <p>Editar cadastro da Escala</p> : <p>Cadastrar Escala</p>}
+                                            { timescale?.id ? <p>Editar cadastro da Escala</p> : <p>Cadastrar Escala</p>}
                                         </button>
                                     </div>
                                 </form>
@@ -145,20 +160,21 @@ export default function Timescale() {
                             success ? (
                                 <div role="alert">
                                     <div className="bg-green-500 text-white font-bold rounded-t px-4 py-4">
-                                        { timescale.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
+                                        { timescale?.id ? <p>Registro editado com sucesso</p> : <p>Registro cadastrado com sucesso</p>}
                                     </div>
                                 </div>
                             ) : ''
                         }
 
-                        {(errors.nome || errors.escala) ? (
+                        {(errors.nome || errors.entrada || errors.saida) ? (
                             <div role="alert">
                                 <div className="bg-red-500 text-white font-bold rounded-t px-4 py-2">
                                     Danger
                                 </div>
                                 <div className="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
                                     <p>{errors.nome ? errors.nome : ''}</p>
-                                    <p>{errors.escala ? errors.escala : ''}</p>
+                                    <p>{errors.entrada ? errors.entrada : ''}</p>
+                                    <p>{errors.saida ? errors.saida : ''}</p>
                                 </div>
                             </div>
                         ) : ''}

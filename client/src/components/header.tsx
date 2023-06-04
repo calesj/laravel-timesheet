@@ -4,7 +4,10 @@ import {MenuIcon, XIcon} from "@heroicons/react/outline";
 import {AuthContext} from "@/contexts/AuthContext";
 import {useRouter} from "next/router";
 import Cookies from "js-cookie";
+declare module 'js-cookie';
 import {api} from "@/services/api";
+import Link from "next/link";
+
 const navigation = [
     {label: 'Dashboard', route: 'dashboard'},
     {label: 'Minha Escala', route: 'escalas'},
@@ -57,31 +60,31 @@ export default function Header() {
                                 <div className="hidden md:block">
                                     <div className="ml-10 flex items-baseline space-x-4">
                                         {navigation.map((item) => (
-                                            <a
+                                            <Link
                                                 key={item.label}
                                                 href={"../../" + item.route}
                                                 className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                                             >
                                                 {item.label}
-                                            </a>
+                                            </Link>
                                         ))}
                                         {
                                             admin ? (
                                                 <>
-                                                    <a
+                                                    <Link
                                                         key="admin/dashboard"
                                                         href="../../admin/dashboard"
                                                         className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                                                     >
                                                         Admin/Funcionarios
-                                                    </a>
-                                                    <a
+                                                    </Link>
+                                                    <Link
                                                         key="admin/escalas"
                                                         href="../../admin/escalas"
                                                         className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
                                                     >
                                                         Admin/Escalas
-                                                    </a>
+                                                    </Link>
                                                 </>
                                             ) : ''
                                         }
@@ -119,38 +122,38 @@ export default function Header() {
                             {navigation.map((item, itemIdx) =>
                                 itemIdx === 0 ? (
                                     <Fragment key={item.label}>
-                                        <a href={"../../" + item.route}
+                                        <Link href={"../../" + item.route}
                                            className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">
                                             {item.label}
-                                        </a>
+                                        </Link>
                                     </Fragment>
                                 ) : (
-                                    <a
+                                    <Link
                                         key={item.label}
                                         href={"../../" + item.route}
                                         className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
                                     >
                                         {item.label}
-                                    </a>
+                                    </Link>
                                 )
                             )}
                             {
                                 admin ? (
                                     <>
-                                        <a
+                                        <Link
                                             key="admin/dashboard"
                                             href="../../admin/dashboard"
                                             className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
                                         >
                                             Admin/Funcionarios
-                                        </a>
-                                        <a
+                                        </Link>
+                                        <Link
                                             key="admin/escalas"
                                             href="../../admin/escalas"
                                             className="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
                                         >
                                             Admin/Escalas
-                                        </a>
+                                        </Link>
                                     </>
                                 ) : ''
                             }

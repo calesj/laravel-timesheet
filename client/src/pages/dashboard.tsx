@@ -1,17 +1,22 @@
-import Head from 'next/head'
 import {withAuthServerSideProps} from "@/components/getServerSideProps/getServerSideProps";
 import {AuthContext} from "@/contexts/AuthContext";
-import React, {useContext, useState} from "react";
+import React, {useContext} from "react";
 import Header from "@/components/header";
 import {api} from "@/services/api";
 
 export default function Dashboard({id, type}: { id: any; type: any }) {
     const {user, getUser} = useContext(AuthContext)
     const collaborator = user?.collaborator
-    const time_records = user?.collaborator?.time_records
+    const time_records: {
+        ponto_entrada_registrado?: string,
+        ponto_almoco_registrado?: string,
+        ponto_retorno_almoco_registrado?: string,
+        ponto_saida_registrado?: string
+    }[] | undefined = user?.collaborator?.time_records;
 
 
-    async function timeRecordSubmit(id, type) {
+    async function timeRecordSubmit(id: string | number | undefined, type: string) {
+
        let response = await api.put(`/time_record/${type}/${id}`).catch(e => {
            alert('desculpe, algo deu errado')
        })
@@ -30,7 +35,7 @@ export default function Dashboard({id, type}: { id: any; type: any }) {
                         key='entrada'
                         onClick={() => timeRecordSubmit(collaborator?.id, 'entry')}
                         className={(time_records && time_records[0]?.ponto_entrada_registrado) ? "bg-gray-500 text-white font-bold py-6 px-8 rounded-full m-4" : "bg-green-500 hover:bg-green-700 text-white font-bold py-6 px-8 rounded-full m-4"}
-                        disabled={(time_records && time_records[0]?.ponto_entrada_registrado)}
+                        disabled={!!(time_records && time_records.length > 0 && time_records[0]?.ponto_entrada_registrado)}
                     >
                         Entrada
                     </button>
@@ -38,7 +43,7 @@ export default function Dashboard({id, type}: { id: any; type: any }) {
                         key='almoco'
                         onClick={() => timeRecordSubmit(collaborator?.id, 'lunch')}
                         className={(time_records && time_records[0]?.ponto_almoco_registrado) ? "bg-gray-500 text-white font-bold py-6 px-8 rounded-full m-4" : "bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-6 px-8 rounded-full m-4"}
-                        disabled={(time_records && time_records[0]?.ponto_almoco_registrado)}
+                        disabled={!!(time_records && time_records.length > 0 && time_records[0]?.ponto_almoco_registrado)}
                     >
                         Almoço
                     </button>
@@ -46,7 +51,7 @@ export default function Dashboard({id, type}: { id: any; type: any }) {
                         key='retorno_almoco'
                         onClick={() => timeRecordSubmit(collaborator?.id, 'return_lunch')}
                         className={(time_records && time_records[0]?.ponto_retorno_almoco_registrado) ? "bg-gray-500 text-white font-bold py-6 px-8 rounded-full m-4" : "bg-orange-500 hover:bg-orange-700 text-white font-bold py-6 px-8 rounded-full m-4"}
-                        disabled={(time_records && time_records[0]?.ponto_retorno_almoco_registrado)}
+                        disabled={!!(time_records && time_records.length > 0 && time_records[0]?.ponto_retorno_almoco_registrado)}
                     >
                         Volta do Almoço
                     </button>
@@ -54,7 +59,7 @@ export default function Dashboard({id, type}: { id: any; type: any }) {
                         key='saida'
                         onClick={() => timeRecordSubmit(collaborator?.id, 'exit')}
                         className={(time_records && time_records[0]?.ponto_saida_registrado)? "bg-gray-500 text-white font-bold py-6 px-8 rounded-full m-4" : "bg-red-400 hover:bg-red-600 text-white font-bold py-6 px-8 rounded-full m-4"}
-                        disabled={(time_records && time_records[0]?.ponto_saida_registrado)}
+                        disabled={!!(time_records && time_records.length > 0 && time_records[0]?.ponto_saida_registrado)}
                     >
                         Saída
                     </button>

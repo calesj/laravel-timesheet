@@ -3,39 +3,34 @@ import {useRouter} from "next/router";
 import axios from "axios"
 import {api                                                                                                                                 } from "@/services/api";
 import Cookies from "js-cookie";
+import {FieldValues} from "react-hook-form";
 
 // TIPAGEM DO USUARIO
 type User = {
     name: string
     email: string,
-}
-
-// TIPAGEM DE LOGIN
-type SignInData = {
-    email: string;
-    password: string;
-}
-
-// TIPAGEM DE REGISTRO
-type registerInData = {
-    name: string,
-    email: string;
-    password: string;
+    collaborator: {
+        id: string | number,
+        matricula: string,
+        cpf: string,
+        user_id: string | number,
+        timescale_id: string | number,
+        time_records: []
+    }
 }
 
 type AuthContextType = {
-    isAuthenticated: boolean;
-    user: User
-    getUser: any
-    signIn: (data: SignInData) => Promise<void>
-    registerIn: (data: registerInData) => Promise<void>
+    isAuthenticated: boolean
+    user: User | null
+    getUser: (route?: string | null) => Promise<void>
+    signIn: (data: FieldValues) => Promise<void>
 }
 
 
 // AQUI ESTAMOS DIZENDO QUE O NOSSO CONTEXTO, PRECISA TER O FORMATO DO AuthContextType
 export const AuthContext = createContext({} as AuthContextType)
 
-export function AuthProvider({children}) {
+export function AuthProvider({ children }: { children: React.ReactNode }) {
     // O ESTADO user, VAI UTILIZAR OS CAMPOS DO TYPE `User`, PODENDO SER UM `User` OU `null`, E COMECANDO DE VALOR `null`
     const [user, setUser] = useState<User | null>(null);
 
@@ -46,7 +41,7 @@ export function AuthProvider({children}) {
     // METODO RESPONSAVEL, POR VERIFICAR SE JA EXISTE ALGUEM AUTENTICADO
     // SE TIVER, ELE REDIRECIONA PARA A PAGINA DE DASHBOARD
     // E SETA AS INFORMACOES DO USUARIO
-    async function getUser(route = null) {
+    async function getUser(route: string | null | undefined = null) {
         const token = Cookies.get('m2_token')
         if (token) {
             let response =  await api.get('/user')
@@ -72,51 +67,33 @@ export function AuthProvider({children}) {
         }
     }
 
-    // METODO RESPONSAVEL, POR REGISTRAR UMA CONTA DE USUARIO
-    async function registerIn({name, email, password}: registerInData) {
-        const response  = await axios.post('http://127.0.0.1:8000/api/register', {
-            name, email, password
-        })
-
-        if (response.data.access_token) {
-            Cookies.set('m2_token', response.data.access_token, {
-                expires: 10 / (24 * 60), // TEMPO DE DURACAO DO TOKEN
-            })
-
-            api.defaults.headers['Authorization'] = `Bearer ${response.data.access_token}`
-
-            setUser(response.data.user)
-
-            router.push('/dashboard')
-        }
-
-        return response
-    }
-
     // METODO RESPONSAVEL, POR LOGAR NA SUA CONTA
-    async function signIn({email, password}: SignInData) {
-        const response  = await axios.post('http://127.0.0.1:8000/api/login', {
-          email, password
-        })
+    const signIn = async (data: FieldValues): Promise<void> => {
+        const { email, password } = data;
+        const response = await axios.post(
+            "https://m2-server-production.up.railway.app/api/login",
+            {
+                email,
+                password,
+            }
+        );
 
         if (response.data.access_token) {
-            Cookies.set('m2_token', response.data.access_token, {
-               expires: 10 / (24 * 60), // TEMPO DE DURACAO DO TOKEN
-            })
+            Cookies.set("m2_token", response.data.access_token, {
+                expires: 10 / (24 * 60), // TEMPO DE DURACAO DO TOKEN
+            });
 
-            api.defaults.headers['Authorization'] = `Bearer ${response.data.access_token}`
+            api.defaults.headers["Authorization"] = `Bearer ${response.data.access_token}`;
 
-            setUser(response.data.user)
+            setUser(response.data.user);
 
-            router.push('/dashboard')
+            router.push("/dashboard");
         }
-
-        return response;
     }
 
     return (
 
-        <AuthContext.Provider value={{ user, getUser, isAuthenticated, signIn, registerIn }}>
+        <AuthContext.Provider value={{ user: user !== null ? user : {} as User, getUser, isAuthenticated, signIn }}>
             {children}
         </AuthContext.Provider>
     )

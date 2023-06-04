@@ -49,7 +49,7 @@ Route::middleware(['auth:sanctum', 'admin'])->controller(\App\Http\Controllers\T
 });
 
 // ROTAS DO COLABORADOR
-Route::middleware('auth:sanctum')->controller(\App\Http\Controllers\CollaboratorController::class)->prefix('collaborator')->group(function () {
+Route::middleware(['auth:sanctum', 'admin'])->controller(\App\Http\Controllers\CollaboratorController::class)->prefix('collaborator')->group(function () {
     Route::get('/', 'index');
     Route::get('search/{busca}', 'search');
     Route::get('/{id}', 'show');
