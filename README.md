@@ -53,8 +53,8 @@ Somente usuarios com privilegios administrativos, podem ter acesso as rotas que 
 
 9 - Acesse a rota `http://localhost:3000`
 
-## Rotas da API
-### USUARIO
+# Rotas da API
+## USUARIO
 - Fazer login (POST)
 `http://127.0.0.1:8000/api/login`
 
@@ -85,7 +85,7 @@ Somente usuarios com privilegios administrativos, podem ter acesso as rotas que 
 - Retorna as informações do usuario, e verifica se ele tem privilegios administrativos (Requer autenticação, e privilégios de administrador) (GET)
 `http://127.0.0.1:8000/api/login`
 
-### ESCALAS (Requer autenticação, e privilégios administrativos)
+## ESCALAS (Requer autenticação, e privilégios administrativos)
 - Retorna todas as escalas cadastradas no banco (GET)
 `http://127.0.0.1:8000/timescale/`
 
