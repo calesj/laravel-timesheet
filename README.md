@@ -31,7 +31,7 @@ senha: `12345678`
 [https://m2-client-production.up.railway.app/](https://m2-client-production.up.railway.app/)
 
 ## Dominio da API (Caso queira fazer requisições via Postman, ou similar)
-[m2-server-production.up.railway.app](https://m2-server-production.up.railway.app/api)
+[https://m2-server-production.up.railway.app](https://m2-server-production.up.railway.app/api)
 
 ## Tecnologias utilizadas
 - Laravel
